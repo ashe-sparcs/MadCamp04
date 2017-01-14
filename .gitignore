@@ -64,3 +64,7 @@ fabric.properties
 # *.ipr
 
 # End of https://www.gitignore.io/api/django,pycharm
+
+
+# Add your own gitignore
+client_secret.json

@@ -1,5 +1,8 @@
 from __future__ import print_function
 from django.shortcuts import render
+from django.shortcuts import HttpResponse
+from django.contrib.auth.models import User
+from LiberalOverflow.models import UserProfile
 
 # Import the email modules we'll need
 from email.mime.text import MIMEText
@@ -19,6 +22,8 @@ try:
     flags = tools.argparser.parse_args([])
 except ImportError:
     flags = None
+
+import uuid
 
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/gmail-python-quickstart.json
@@ -104,19 +109,51 @@ def home(request):
 
 
 def register(request):
+    print(request.get_raw_uri())
     return render(request, 'register.html')
 
 
 def register_complete(request):
+    # POST 파라미터 가져오기
+    nickname = request.POST.get('nickname')
+    password = request.POST.get('password')
+    kaist_email = request.POST.get('email')
+    auth_code = str(uuid.uuid4())
+
+    # User object 만들기
+    user = User.objects.create_user(nickname, kaist_email, password)
+    user_profile = UserProfile()
+    user_profile.user = user
+    user_profile.authenticationCode = auth_code
+    user_profile.save()
+
     # 인증 메일 보내기
-    print(request.POST.get('email'))
-    email_msg = create_message('master.liberaloverflow@gmail.com', request.POST.get('email'), 'subject', 'Here is the message.')
+    email_from = 'master.liberaloverflow@gmail.com'
+    email_subject = 'LiberalOverflow Authentication Mail'
+    email_content = 'Welcome, '+nickname+'!\n'+'Click the link below to authenticate your LiberalOverflow account.\n'
+    email_content += 'http://localhost:8000/authenticate/' + nickname + '/' + auth_code
+    email_msg = create_message(email_from, kaist_email, email_subject, email_content)
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('gmail', 'v1', http=http)
     send_message(service, 'me', email_msg)
 
-    # User object 만들기
-
     # 완료 페이지 띄우기
     return render(request, 'register_complete.html')
+
+
+def authenticate(request):
+    request_url = request.get_raw_uri()
+    request_url_list = request_url.split('/')
+    nickname = request_url_list[-2]
+    auth_code = request_url_list[-1]
+    user = User.objects.get(username__exact=nickname)
+    user_profile = user.userprofile
+    if auth_code == user_profile.authenticationCode:
+        # authentication success
+        user_profile.isAuthenticated = True
+        user_profile.save()
+        return render(request, 'authentication_complete.html')
+    else:
+        # authentication fail
+        return HttpResponse('Authentication fail')
