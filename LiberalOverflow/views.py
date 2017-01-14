@@ -1,11 +1,59 @@
+from __future__ import print_function
 from django.shortcuts import render
-from django.core.mail import send_mail
-# Import smtplib for the actual sending function
-import smtplib
 
 # Import the email modules we'll need
 from email.mime.text import MIMEText
 import base64
+import urllib
+
+import httplib2
+import os
+
+from apiclient import discovery
+from oauth2client import client
+from oauth2client import tools
+from oauth2client.file import Storage
+
+try:
+    import argparse
+    flags = tools.argparser.parse_args([])
+except ImportError:
+    flags = None
+
+# If modifying these scopes, delete your previously saved credentials
+# at ~/.credentials/gmail-python-quickstart.json
+SCOPES = 'https://mail.google.com'
+CLIENT_SECRET_FILE = 'client_secret.json'
+APPLICATION_NAME = 'LiberalOverflow'
+
+
+def get_credentials():
+    """Gets valid user credentials from storage.
+
+    If nothing has been stored, or if the stored credentials are invalid,
+    the OAuth2 flow is completed to obtain the new credentials.
+
+    Returns:
+        Credentials, the obtained credential.
+    """
+    home_dir = os.path.expanduser('~')
+    credential_dir = os.path.join(home_dir, '.credentials')
+    if not os.path.exists(credential_dir):
+        os.makedirs(credential_dir)
+    credential_path = os.path.join(credential_dir,
+                                   'gmail-python-quickstart.json')
+
+    store = Storage(credential_path)
+    credentials = store.get()
+    if not credentials or credentials.invalid:
+        flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
+        flow.user_agent = APPLICATION_NAME
+        if flags:
+            credentials = tools.run_flow(flow, store, flags)
+        else: # Needed only for compatibility with Python 2.6
+            credentials = tools.run(flow, store)
+        print('Storing credentials to ' + credential_path)
+    return credentials
 
 
 def create_message(sender, to, subject, message_text):
@@ -24,7 +72,10 @@ def create_message(sender, to, subject, message_text):
     message['to'] = to
     message['from'] = sender
     message['subject'] = subject
-    return {'raw': base64.urlsafe_b64encode(message.as_string())}
+    print(message.as_string())
+    raw = base64.urlsafe_b64encode(message.as_bytes())
+    raw = raw.decode()
+    return {'raw': raw}
 
 
 def send_message(service, user_id, message):
@@ -40,11 +91,10 @@ def send_message(service, user_id, message):
     Sent Message.
     """
     try:
-        message = (service.users().messages().send(userId=user_id, body=message)
-               .execute())
+        message = (service.users().messages().send(userId=user_id, body=message).execute())
         print('Message Id: ' + message['id'])
         return message
-    except errors.HttpError as error:
+    except urllib.error.HTTPError as error:
         print('An error occurred: ' + error)
 
 
@@ -60,12 +110,13 @@ def register(request):
 def register_complete(request):
     # 인증 메일 보내기
     print(request.POST.get('email'))
-    send_mail(
-        'LiberalOverflow Authentication email',
-        'Here is the message.',
-        'master.liberaloverflow@gmail.com',
-        [request.POST.get('email')],
-        fail_silently=False,
-    )
+    email_msg = create_message('master.liberaloverflow@gmail.com', request.POST.get('email'), 'subject', 'Here is the message.')
+    credentials = get_credentials()
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('gmail', 'v1', http=http)
+    send_message(service, 'me', email_msg)
+
+    # User object 만들기
+
     # 완료 페이지 띄우기
     return render(request, 'register_complete.html')
