@@ -73,7 +73,7 @@
         </div>
     </article>
 
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -81,15 +81,10 @@
     <script type="text/javascript">
         var isPasswordSame = false;
         $('#InputPassword2').change(function () {
-            console.log('changing');
-            console.log(document.getElementById('InputPassword1').value);
-            console.log(document.getElementById('InputPassword2').value);
             if (document.getElementById('InputPassword1').value !== document.getElementById('InputPassword2').value) {
-                console.log('different');
                 $('#password-different').show();
                 isPasswordSame = false;
             } else {
-                console.log('same');
                 $('#password-different').hide();
                 isPasswordSame = true;
             }
