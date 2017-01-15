@@ -155,6 +155,7 @@ def my_authenticate(request):
         # authentication success
         user_profile.isAuthenticated = True
         user_profile.save()
+        login(request, user)
         return render(request, 'authentication_complete.html')
     else:
         # authentication fail
