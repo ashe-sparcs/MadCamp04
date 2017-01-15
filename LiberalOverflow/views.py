@@ -1,6 +1,7 @@
 from __future__ import print_function
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.shortcuts import HttpResponse
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from LiberalOverflow.models import UserProfile
 
@@ -24,6 +25,7 @@ except ImportError:
     flags = None
 
 import uuid
+import json
 
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/gmail-python-quickstart.json
@@ -142,7 +144,7 @@ def register_complete(request):
     return render(request, 'register_complete.html')
 
 
-def authenticate(request):
+def my_authenticate(request):
     request_url = request.get_raw_uri()
     request_url_list = request_url.split('/')
     nickname = request_url_list[-2]
@@ -157,3 +159,31 @@ def authenticate(request):
     else:
         # authentication fail
         return HttpResponse('Authentication fail')
+
+
+def my_login_ajax(request):
+    print(request)
+    username = request.POST['nickname']
+    password = request.POST['password']
+    response_data = {}
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        login(request, user)
+        # Redirect to a success page.
+        response_data['nickname'] = username
+        response_data['success'] = True
+    else:
+        # Return an 'invalid login' error message.
+        response_data['nickname'] = username
+        response_data['success'] = False
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
+def my_login(request):
+    return render(request, 'login.html')
+
+
+def my_logout(request):
+    if request.user.is_authenticated():
+        logout(request)
+    return redirect('/')

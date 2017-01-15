@@ -17,6 +17,7 @@
 
     <!-- Custom styles for this template -->
     <link href="/media/css/home.css" rel="stylesheet">
+    <link href="/media/css/snackbar.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -45,7 +46,12 @@
           </ul>
           <!-- 나중에 home.css 파일에 예쁘게 해서 넣기 -->
           <ul class="nav navbar-nav" style="float: right;">
-            <li><a id="login-anchor" href="#login">Log in</a></li>
+            {% if user.is_authenticated %}
+                <li><a onmouseover="this.style.color='#9d9d9d'">Welcome, {{ user }}!</a></li>
+                <li><a href="/logout">Log out</a></li>
+            {% else %}
+                <li><a id="login-anchor" href="#login">Log in</a></li>
+            {% endif %}
             <!-- Modal -->
             <div id="myModal" class="modal fade" role="dialog">
               <div class="modal-dialog">
@@ -57,18 +63,19 @@
                     <h4 class="modal-title">Log in</h4>
                   </div>
                   <div class="modal-body">
-                    <form class="form-signin">
-                    <label for="inputEmail" class="sr-only">Email address</label>
-                    <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-                    <label for="inputPassword" class="sr-only">Password</label>
-                    <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-                    <div class="checkbox">
-                      <label>
-                        <input type="checkbox" value="remember-me"> Remember me
-                      </label>
-                    </div>
-                    <button class="btn btn-lg btn-primary btn-block" type="submit" data-dismiss="modal">Log in</button>
-                  </form>
+                    <form id="login-form" class="form-signin" method="post">
+                        {% csrf_token %}
+                        <label for="inputNickname" class="sr-only">Nickname</label>
+                        <input type="text" id="inputNickname" name="nickname" class="form-control" placeholder="Nickname" required autofocus>
+                        <label for="inputPassword" class="sr-only">Password</label>
+                        <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" style="margin-top: 10px;" required>
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" value="remember-me"> Remember me
+                          </label>
+                        </div>
+                        <button id="login-button" class="btn btn-lg btn-primary btn-block" type="button">Log in</button>
+                    </form>
                   </div>
                   <div class="modal-footer">
                       Don't have an account? <a href="/register">Sign up</a>
@@ -150,6 +157,7 @@
       </footer>
 
     </div><!--/.container-->
+    <div id="snackbar">Log in failed</div>
 
 
     <!-- Bootstrap core JavaScript
@@ -161,11 +169,37 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
+            $('#inputPassword').keypress(function(e){
+                if(e.keyCode==13)
+                $('#login-button').click();
+            });
             $('[data-toggle="offcanvas"]').click(function () {
                 $('.row-offcanvas').toggleClass('active')
             });
             $('#login-anchor').click(function () {
                 $('#myModal').modal('show');
+            });
+            $('#login-button').click(function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '/ajax/login/',
+                    data: $('#login-form').serialize(),
+                    success: function(response){
+                        // do something with response
+                        if (response['success']) {
+                            $('#myModal').modal('hide');
+                            location.href = '/';
+                        } else {
+                            console.log('login fail');
+                            // Get the snackbar DIV
+                            var x = document.getElementById("snackbar");
+                            // Add the "show" class to DIV
+                            x.className = "show";
+                            // After 3 seconds, remove the show class from DIV
+                            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+                        }
+                    }
+                });
             });
         });
     </script>
