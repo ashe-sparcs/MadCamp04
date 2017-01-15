@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^register_complete/', views.register_complete),
     url(r'^authenticate/.+/.+', views.my_authenticate),
     url(r'^ajax/login/', views.my_login_ajax),
+    url(r'^ajax/duplicate/', views.check_duplicate_ajax),
     url(r'^login/', views.my_login),
     url(r'^logout/', views.my_logout),
 ]

@@ -30,7 +30,7 @@
           <h1>Register</h1>
         </div>
         <div class="col-md-6 col-md-offset-3">
-          <form id="myForm" action="/register_complete/" method="post" role="form" onsubmit="if (!isPasswordSame) {alert('Password doesn\'t match'); return false;} ">
+          <form id="myForm" action="/register_complete/" method="post" role="form" onsubmit="validate()">
             {% csrf_token %}
             <div class="form-group">
                <!-- 중복확인 해야한다 -->
@@ -38,9 +38,11 @@
               <div class="input-group">
                 <input type="text" class="form-control" name="nickname" id="Nickname" placeholder="It is used when logging in." required>
                 <span class="input-group-btn">
-                  <button type="button" class="btn btn-success">Check duplicate<i class="fa fa-mail-forward spaceLeft"></i></button>
+                  <button id="check-duplicate-button" type="button" class="btn btn-success">Check duplicate<i class="fa fa-mail-forward spaceLeft"></i></button>
                 </span>
               </div>
+              <div style="font-weight:bold; color:#FF0000" id="nickname-duplicate" hidden>That nickname is already taken by someone else.</div>
+              <div style="font-weight:bold;color:#449d44" id="nickname-unique" hidden>You can use that nickname.</div>
             </div>
             <div class="form-group">
               <label for="InputPassword1">Password</label>
@@ -49,7 +51,8 @@
             <div class="form-group">
               <label for="InputPassword2">Confirm password</label>
               <input type="password" class="form-control" id="InputPassword2" placeholder="Confirm password" required>
-              <div style="color:#FF0000" id="password-different" hidden>Password doesn't match</div>
+              <div style="font-weight:bold; color:#FF0000" id="password-different" hidden>Password doesn't match.</div>
+              <div style="font-weight:bold; color:#449d44" id="password-match" hidden>Password confirmed.</div>
             </div>
             <div class="form-group">
               <!-- 이미 인증하는데에 쓰였으면 밴. -->
@@ -80,15 +83,67 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/media/js/bootstrap.min.js"></script>
     <script type="text/javascript">
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        function validate() {
+            if (isDuplicate) {
+                alert('Nickname duplicate check needed.');
+                return false;
+            } else if (!isPasswordSame) {
+                alert("Password doesn't match");
+                return false;
+            } else {
+                return true;
+            }
+        }
         var isPasswordSame = false;
-        $('#InputPassword2').change(function () {
+        var isDuplicate = true;
+        var csrftoken = getCookie('csrftoken');
+        $('#InputPassword2').on('change keyup paste', function () {
             if (document.getElementById('InputPassword1').value !== document.getElementById('InputPassword2').value) {
+                $('#password-match').hide();
                 $('#password-different').show();
                 isPasswordSame = false;
             } else {
                 $('#password-different').hide();
+                $('#password-match').show();
                 isPasswordSame = true;
             }
+        });
+        $('#check-duplicate-button').click(function () {
+            $.ajax({
+                type: 'POST',
+                url: '/ajax/duplicate/',
+                data: {
+                    'nickname': document.getElementById('Nickname').value,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response){
+                    // do something with response
+                    if (response['is_duplicate']) {
+                        $('#nickname-unique').hide();
+                        $('#nickname-duplicate').show();
+                        isDuplicate = true;
+                    } else {
+                        $('#nickname-duplicate').hide();
+                        $('#nickname-unique').show();
+                        isDuplicate = false;
+                    }
+                }
+            });
         });
     </script>
   </body>

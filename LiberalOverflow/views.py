@@ -187,3 +187,14 @@ def my_logout(request):
     if request.user.is_authenticated():
         logout(request)
     return redirect('/')
+
+
+def check_duplicate_ajax(request):
+    username = request.POST['nickname']
+    response_data = {}
+    if User.objects.filter(username=username).exists():
+        response_data['is_duplicate'] = True
+    else:
+        response_data['is_duplicate'] = False
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
+
