@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.shortcuts import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from LiberalOverflow.models import UserProfile
+from LiberalOverflow.models import UserProfile, Lecture, TimeSlot
 
 # Import the email modules we'll need
 from email.mime.text import MIMEText
@@ -201,5 +201,6 @@ def check_duplicate_ajax(request):
 
 
 def timetable(request):
-    return render(request, 'timetable.html')
+    lectures = list(Lecture.objects.all())
+    return render(request, 'timetable.html', {'lectures': lectures})
 

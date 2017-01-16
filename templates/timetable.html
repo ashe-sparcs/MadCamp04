@@ -31,8 +31,12 @@
            min-height: 100px;
            height: 100px;
         }
+        #timetable {
+            table-layout : fixed;
+        }
         #timetable td {
             background-color: #fff;
+
         }
         #timetable td:hover {
             background-color: #ececec;
@@ -49,13 +53,24 @@
         }
         .searchbutton-on-the-list {
             height: 42px;
+            width: 42px;
             border-radius: 0px 5px 0px 0px;
             background-color: #337AB7;
+            border-color: #337AB7;
         }
         .searchbutton-on-the-list:hover {
+            width: 42px;
             height: 42px;
             border-radius: 0px 5px 0px 0px;
             background-color: #337AB7;
+            border-color: #337AB7;
+        }
+        .searchbutton-on-the-list:focus {
+            width: 42px;
+            height: 42px;
+            border-radius: 0px 5px 0px 0px;
+            background-color: #337AB7;
+            border-color: #337AB7;
         }
     </style>
   </head>
@@ -192,18 +207,9 @@
                       </button>
                     </span>
                 </div>
-                <a href="#" class="list-group-item active">스페인어 회화</a>
-                <a href="#" class="list-group-item">사회학개론</a>
-                <a href="#" class="list-group-item">법과 사회생활</a>
-                <a href="#" class="list-group-item">경제와 법</a>
-                <a href="#" class="list-group-item">현대 중국의 이해</a>
-                <a href="#" class="list-group-item">한국문학특강&lt;조선선비의 생활과 정신&gt;</a>
-                <a href="#" class="list-group-item">논리학과 인공지능</a>
-                <a href="#" class="list-group-item">경제학개론</a>
-                <a href="#" class="list-group-item">배드민턴</a>
-                <a href="#" class="list-group-item">사회과학특강&lt;국제분쟁과 미디어&gt;</a>
-                <a href="#" class="list-group-item">불어 회화</a>
-                <a href="#" class="list-group-item">Intermediate English Speaking &amp; Listening</a>
+                {% for lecture in lectures %}
+                  <a href="#" class="list-group-item">{{ lecture.lecture_name }} ({{ lecture.professor_name }})</a>
+                {% endfor %}
               </div>
           </div><!--/.sidebar-offcanvas-->
       </div><!--/row-->
