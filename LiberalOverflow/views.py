@@ -199,3 +199,7 @@ def check_duplicate_ajax(request):
         response_data['is_duplicate'] = False
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
+
+def timetable(request):
+    return render(request, 'timetable.html')
+
