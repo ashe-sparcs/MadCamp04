@@ -229,15 +229,31 @@
     <script type="text/javascript" src="/media/js/Example.Modal.js"></script>
     <script type="text/javascript">
 
-        function mouse(a,b,c){document.getElementsByClassName(c)[0].innerHTML=a.concat(" ",'(',b,')');
-                          document.getElementsByClassName(c)[0].style.backgroundColor='#C8C8C8' ;
-                          document.getElementsByClassName(c)[1].style.backgroundColor='#C8C8C8' ;
-                          document.getElementsByClassName(c)[1].innerHTML=a.concat(" ",'(',b,')') }
+        function mouse(a,b,c){
+               if(c==='Friday13.0') {
+                   document.getElementsByClassName(c)[0].innerHTML=a.concat(" ",'(',b,')');
+                   document.getElementsByClassName(c)[0].style.backgroundColor='#C8C8C8' ;
+               }
+               else {
+                   document.getElementsByClassName(c)[0].innerHTML=a.concat(" ",'(',b,')');
+                   document.getElementsByClassName(c)[0].style.backgroundColor='#C8C8C8' ;
+                   document.getElementsByClassName(c)[1].style.backgroundColor='#C8C8C8' ;
+                   document.getElementsByClassName(c)[1].innerHTML=a.concat(" ",'(',b,')') }
+               }
 
-        function offmouse(c){document.getElementsByClassName(c)[0].innerHTML='';
-                             document.getElementsByClassName(c)[1].innerHTML='';
-                             document.getElementsByClassName(c)[0].style.backgroundColor='transparent';
-                             document.getElementsByClassName(c)[1].style.backgroundColor='transparent';}
+        function offmouse(c){
+
+            if(c==='Friday13.0') {
+                document.getElementsByClassName(c)[0].innerHTML='';
+                document.getElementsByClassName(c)[0].style.backgroundColor='transparent';
+            }
+            else {
+                document.getElementsByClassName(c)[0].innerHTML='';
+                document.getElementsByClassName(c)[1].innerHTML='';
+                document.getElementsByClassName(c)[0].style.backgroundColor='transparent';
+                document.getElementsByClassName(c)[1].style.backgroundColor='transparent';
+            }
+        }
 
         function getCookie(name) {
             var cookieValue = null;
