@@ -155,46 +155,47 @@
           <tbody>
             <tr>
               <th scope="row">9:00-10:30</th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td class="Monday9.0"></td>
+              <td class="Tuesday9.0"></td>
+              <td class="Monday9.0"></td>
+              <td class="Tuesday9.0"></td>
+              <td class="Friday9.0"></td>
             </tr>
             <tr>
               <th scope="row">10:30-12:00</th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td class="Monday10.5"></td>
+              <td class="Tuesday10.5"></td>
+              <td class="Monday10.5"></td>
+              <td class="Tuesday10.5"></td>
+              <td class="Friday9.0"></td>
             </tr>
             <tr>
               <th scope="row">1:00-2:30</th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td class="Monday13.0"></td>
+              <td class="Tuesday13.0"></td>
+              <td class="Monday13.0"></td>
+              <td class="Tuesday13.0"></td>
+              <td class="Friday13.0"></td>
             </tr>
             <tr>
               <th scope="row">2:30-4:00</th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td class="Monday14.5"></td>
+              <td class="Tuesday14.5"></td>
+              <td class="Monday14.5"></td>
+              <td class="Tuesday14.5"></td>
+              <td class="Friday14.5"></td>
             </tr>
             <tr>
               <th scope="row">4:00-5:30</th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td class="Monday16.0"></td>
+              <td class="Tuesday16.0"></td>
+              <td class="Monday16.0"></td>
+              <td class="Tuesday16.0"></td>
+              <td class="Friday16.0"></td>
             </tr>
           </tbody>
         </table>
+
         </div>
           <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
               <div class="list-group">
@@ -207,8 +208,10 @@
                       </button>
                     </span>
                 </div>
-                {% for lecture in lectures %}
-                  <a href="#" class="list-group-item">{{ lecture.lecture_name }} ({{ lecture.professor_name }})</a>
+                {% for lecture_info in lecture_infos %}
+                  <a href="#" class="list-group-item" onmouseover="mouse('{{ lecture_info.0 }}','{{ lecture_info.1 }}','{{ lecture_info.2 }}')" onmouseout="offmouse('{{ lecture_info.2 }}')"
+                  >{{ lecture_info.0 }} ({{ lecture_info.1 }})</a>
+
                 {% endfor %}
               </div>
           </div><!--/.sidebar-offcanvas-->
@@ -221,18 +224,57 @@
     </div><!--/.container-->
     <div id="snackbar">Log in failed</div>
 
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="/media/js/bootstrap.js"></script>
     <script type="text/javascript" src="/media/js/Example.Modal.js"></script>
     <script type="text/javascript">
+
+        function mouse(a,b,c){document.getElementsByClassName(c)[0].innerHTML=a.concat(" ",'(',b,')');
+                          document.getElementsByClassName(c)[0].style.backgroundColor='#C8C8C8' ;
+                          document.getElementsByClassName(c)[1].style.backgroundColor='#C8C8C8' ;
+                          document.getElementsByClassName(c)[1].innerHTML=a.concat(" ",'(',b,')') }
+
+        function offmouse(c){document.getElementsByClassName(c)[0].innerHTML='';
+                             document.getElementsByClassName(c)[1].innerHTML='';
+                             document.getElementsByClassName(c)[0].style.backgroundColor='transparent';
+                             document.getElementsByClassName(c)[1].style.backgroundColor='transparent';}
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+
+
+
         $('.table td').click(function() {
             // cell was clicked
             $(this).toggleClass('selected-cell');
         });
+       {% comment %} $.ajax({
+                type: 'POST',
+                url: '/ajax/duplicate/',
+                data: {
+                    'nickname': document.getElementById('Nickname').value,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response){
+                    // do something with response
+                    response['is_duplicate']
+
+                }
+            });{% endcomment %}
     </script>
   </body>
 </html>
