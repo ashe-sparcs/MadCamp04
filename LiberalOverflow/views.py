@@ -202,5 +202,7 @@ def check_duplicate_ajax(request):
 
 def timetable(request):
     lectures = list(Lecture.objects.all())
-    return render(request, 'timetable.html', {'lectures': lectures})
-
+    lecture_infos = []
+    for lecture in lectures:
+        lecture_infos.append([lecture.lecture_name, lecture.professor_name, lecture.time_slots.all()[0].day_of_week+ str(lecture.time_slots.all()[0].start_time)])
+    return render(request, 'timetable.html', {'lecture_infos': lecture_infos})

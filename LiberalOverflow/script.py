@@ -1,3 +1,4 @@
+
 from LiberalOverflow.models import Lecture, TimeSlot
 dow = [('Monday', 'Wednesday'), ('Tuesday', 'Thursday')]
 days = ['Monday', 'Wednesday', 'Tuesday', 'Thursday', 'Friday']

@@ -126,6 +126,6 @@ STATICFILES_DIRS = (
 )
 
 try:
-    from local_settings import *
+    from MadCamp04.local_settings import *
 except ImportError:
     pass
