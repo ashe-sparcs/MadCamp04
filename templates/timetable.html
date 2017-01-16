@@ -208,10 +208,8 @@
                       </button>
                     </span>
                 </div>
-                {% for lecture_info in lecture_infos %}
-                  <a href="#" class="list-group-item" onmouseover="mouse('{{ lecture_info.0 }}','{{ lecture_info.1 }}','{{ lecture_info.2 }}')" onmouseout="offmouse('{{ lecture_info.2 }}')"
-                  >{{ lecture_info.0 }} ({{ lecture_info.1 }})</a>
-
+                {% for info in lecture_infos %}
+                  <a href="#" class="list-group-item" onclick="onClick('{{ info.2 }}')" onmouseover="mouse('{{ info.0 }}','{{ info.1 }}','{{ info.2 }}')" onmouseout="offmouse('{{ info.2 }}')">{{ info.0 }} ({{ info.1 }})</a>
                 {% endfor %}
               </div>
           </div><!--/.sidebar-offcanvas-->
@@ -241,17 +239,30 @@
                    document.getElementsByClassName(c)[1].innerHTML=a.concat(" ",'(',b,')') }
                }
 
-        function offmouse(c){
+        function offmouse(c) {
+            var isClicked = document.getElementsByClassName(c)[0].classList.contains('block-clicked');
+            if (!isClicked) {
+                if(c.includes('Friday13.0')) {
+                    document.getElementsByClassName(c)[0].innerHTML='';
+                    document.getElementsByClassName(c)[0].style.backgroundColor='';
+                }
+                else {
+                    document.getElementsByClassName(c)[0].innerHTML='';
+                    document.getElementsByClassName(c)[1].innerHTML='';
+                    document.getElementsByClassName(c)[0].style.backgroundColor='';
+                    document.getElementsByClassName(c)[1].style.backgroundColor='';
+                }
+            }
+        }
+
+        function onClick(c) {
 
             if(c==='Friday13.0') {
-                document.getElementsByClassName(c)[0].innerHTML='';
-                document.getElementsByClassName(c)[0].style.backgroundColor='transparent';
+                document.getElementsByClassName(c)[0].classList.toggle('block-clicked');
             }
             else {
-                document.getElementsByClassName(c)[0].innerHTML='';
-                document.getElementsByClassName(c)[1].innerHTML='';
-                document.getElementsByClassName(c)[0].style.backgroundColor='transparent';
-                document.getElementsByClassName(c)[1].style.backgroundColor='transparent';
+                document.getElementsByClassName(c)[0].classList.toggle('block-clicked');
+                document.getElementsByClassName(c)[1].classList.toggle('block-clicked');
             }
         }
 
