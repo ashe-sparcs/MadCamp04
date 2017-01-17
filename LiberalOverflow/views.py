@@ -209,14 +209,13 @@ def check_duplicate_ajax(request):
 @login_required(login_url='/login/')
 def timetable(request):
     user_profile = UserProfile.objects.get(user=request.user)
-    print(user_profile.taken_lectures.all())
-    print(user_profile.wish_time_slots.all())
     # fetch time table and render.
     lectures = list(Lecture.objects.all())
+    taken_lectures = list(user_profile.taken_lectures.all())
     lecture_infos = []
     for lecture in lectures:
         lecture_infos.append([lecture.lecture_name, lecture.professor_name, lecture.time_slots.all()[0].day_of_week+ str(lecture.time_slots.all()[0].start_time)])
-    return render(request, 'timetable.html', {'lecture_infos': lecture_infos})
+    return render(request, 'timetable.html', {'lecture_infos': lecture_infos, 'taken_lectures': taken_lectures})
 
 
 def add_taken_ajax(request):
