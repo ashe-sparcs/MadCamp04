@@ -36,7 +36,6 @@
         }
         #timetable td {
             background-color: #fff;
-
         }
         #timetable td:hover {
             background-color: #ececec;
@@ -285,10 +284,47 @@
 
 
 
+        $('.table td' ).mouseover(
+          {% comment %}  console.log(typeof(this.className));{% endcomment %}
+
+            function(){
+                if (this.className =="Friday13.0" || this.className=="Friday14.5" || this.className == "Friday16.0")
+                { document.getElementsByClassName(this.className)[0].style.backgroundColor ='#ececec'}
+                else{
+                     document.getElementsByClassName(this.className)[0].style.backgroundColor='#ececec';
+                    document.getElementsByClassName(this.className)[1].style.backgroundColor='#ececec';
+                }
+            }
+        );
+        $('.table td' ).mouseout(
+            function(){
+                if (this.className =="Friday13.0" || this.className=="Friday14.5" || this.className == "Friday16.0")
+                { document.getElementsByClassName(this.className)[0].style.backgroundColor =''}
+                else{
+                     document.getElementsByClassName(this.className)[0].style.backgroundColor='';
+                    document.getElementsByClassName(this.className)[1].style.backgroundColor='';
+                }
+
+
+            }
+        );
+
+
         $('.table td').click(function() {
             // cell was clicked
             $(this).toggleClass('selected-cell');
         });
+
+
+
+
+
+
+
+
+
+
+
        {% comment %} $.ajax({
                 type: 'POST',
                 url: '/ajax/duplicate/',
