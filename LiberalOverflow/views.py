@@ -110,9 +110,44 @@ def send_message(service, user_id, message):
         print('An error occurred: ' + error)
 
 
+def find_take_lectures(my_profile, your_profile):
+    take_lectures = []
+    your_lectures = list(your_profile.taken_lectures.all())
+    my_wishes = list(my_profile.wish_time_slots.all())
+    for lec in your_lectures:
+        if lec.time_slots.all()[0] in my_wishes:
+            take_lectures.append(lec)
+    return take_lectures
+
+
+def find_give_lectures(my_profile, your_profile):
+    give_lectures = []
+    my_lectures = list(my_profile.taken_lectures.all())
+    your_wishes = list(your_profile.wish_time_slots.all())
+    for lec in my_lectures:
+        if lec.time_slots.all()[0] in your_wishes:
+            give_lectures.append(lec)
+    return give_lectures
+
+
 # Create your views here.
 def home(request):
-    return render(request, 'home.html')
+    # matching algorithm
+    my_profile = UserProfile.objects.filter(user=request.user)[0]
+    user_profile_all = list(UserProfile.objects.exclude(user=request.user))
+    exchangables = []
+    for user_profile in user_profile_all:
+        take_lectures = find_take_lectures(my_profile, user_profile)
+        give_lectures = find_give_lectures(my_profile, user_profile)
+        if take_lectures or give_lectures:
+            exchangables.append([user_profile.user.username, take_lectures, give_lectures])
+    context = {
+        'exchangables': exchangables
+    }
+    print(x[0] for x in exchangables)
+    print([x.lecture_name for x in exchangables[0][1]])
+    print([x.lecture_name for x in exchangables[0][2]])
+    return render(request, 'home.html', context)
 
 
 def register(request):
@@ -132,7 +167,6 @@ def register_complete(request):
     user_profile = UserProfile()
     user_profile.user = user
     user_profile.authenticationCode = auth_code
-    user_profile.timetable = Timetable()
     user_profile.save()
 
     # 인증 메일 보내기
