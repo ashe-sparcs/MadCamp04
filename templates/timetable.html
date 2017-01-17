@@ -305,17 +305,31 @@
                 document.getElementsByClassName(classOfCell)[0].classList.toggle('block-clicked');
                 document.getElementsByClassName(classOfCell)[1].classList.toggle('block-clicked');
             }
-            $.ajax({
-                type: 'POST',
-                url: '/ajax/add_taken/',
-                data: {
-                    'taken_lecture_name': lecture_name
-                },
-                'csrfmiddlewaretoken': '{{ csrf_token }}',
-                success: function(response){
+            if (document.getElementsByClassName(classOfCell)[0].classList.contains('block-clicked')) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/ajax/add_taken/',
+                    data: {
+                        'taken_lecture_name': lecture_name
+                    },
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    success: function (response) {
+                        if (response['success']) {
+                            var x = document.getElementById("snackbar");
+                            // Add the "show" class to snackbar
+                            x.innerHTML = "Added";
+                            x.className = "show";
+                            // After 3 seconds, remove the show class from snackbar
+                            setTimeout(function () {
+                                x.className = x.className.replace("show", "");
+                            }, 3000);
+                        }
+                    }
+                });
+            } else {
+                // delete
 
-                }
-            });
+            }
          }
 
         $('.table td').click(function() {

@@ -4,6 +4,7 @@ from django.shortcuts import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from LiberalOverflow.models import UserProfile, Lecture, TimeSlot
+from django.contrib.auth.decorators import login_required
 
 # Import the email modules we'll need
 from email.mime.text import MIMEText
@@ -131,6 +132,7 @@ def register_complete(request):
     user_profile = UserProfile()
     user_profile.user = user
     user_profile.authenticationCode = auth_code
+    user_profile.timetable = Timetable()
     user_profile.save()
 
     # 인증 메일 보내기
@@ -204,7 +206,12 @@ def check_duplicate_ajax(request):
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
+@login_required(login_url='/login/')
 def timetable(request):
+    user_profile = UserProfile.objects.get(user=request.user)
+    print(user_profile.taken_lectures.all())
+    print(user_profile.wish_time_slots.all())
+    # fetch time table and render.
     lectures = list(Lecture.objects.all())
     lecture_infos = []
     for lecture in lectures:
@@ -216,8 +223,12 @@ def add_taken_ajax(request):
     taken_lecture_name = request.POST['taken_lecture_name']
     response_data = {}
     taken_lecture = Lecture.objects.filter(lecture_name=taken_lecture_name)[0]
-    response_data['professor_name'] = taken_lecture.professor_name
-    print(taken_lecture.professor_name)
+    response_data['success'] = True
+    # add lecture to user timetable ##########
+    user_profile = UserProfile.objects.get(user=request.user)
+    user_profile.taken_lectures.add(taken_lecture)
+    user_profile.save()
+    ##########################################
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
