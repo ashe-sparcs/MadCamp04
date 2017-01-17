@@ -157,42 +157,42 @@
           <tbody>
             <tr>
               <th scope="row">9:00-10:30</th>
-              <td class="Monday9.0"></td>
-              <td class="Tuesday9.0"></td>
-              <td class="Monday9.0"></td>
-              <td class="Tuesday9.0"></td>
-              <td class="Friday9.0"></td>
+              <td class="Monday9.0" id="Mondayfirst90"></td>
+              <td class="Tuesday9.0" id="Tuesdayfirst90" ></td>
+              <td class="Monday9.0" id="Mondaysecond90"></td>
+              <td class="Tuesday9.0" id="Tuesdaysecond90"></td>
+              <td class="Friday9.0" id="Fridayfirst"></td>
             </tr>
             <tr>
               <th scope="row">10:30-12:00</th>
-              <td class="Monday10.5"></td>
-              <td class="Tuesday10.5"></td>
-              <td class="Monday10.5"></td>
-              <td class="Tuesday10.5"></td>
-              <td class="Friday9.0"></td>
+              <td class="Monday10.5" id="Mondayfirst105"></td>
+              <td class="Tuesday10.5" id="Tuesdayfirst105"></td>
+              <td class="Monday10.5" id="Mondaysecond105"></td>
+              <td class="Tuesday10.5" id="Tuesdaysecond105"></td>
+              <td class="Friday9.0" id="Fridaysecond"></td>
             </tr>
             <tr>
               <th scope="row">1:00-2:30</th>
-              <td class="Monday13.0"></td>
-              <td class="Tuesday13.0"></td>
-              <td class="Monday13.0"></td>
-              <td class="Tuesday13.0"></td>
+              <td class="Monday13.0" id="Mondayfirst130"></td>
+              <td class="Tuesday13.0" id="Tuesdayfirst130"></td>
+              <td class="Monday13.0" id="Mondaysecond130"></td>
+              <td class="Tuesday13.0" id="Tuesdaysecond130"></td>
               <td class="Friday13.0"></td>
             </tr>
             <tr>
               <th scope="row">2:30-4:00</th>
-              <td class="Monday14.5"></td>
-              <td class="Tuesday14.5"></td>
-              <td class="Monday14.5"></td>
-              <td class="Tuesday14.5"></td>
+              <td class="Monday14.5" id="Mondayfirst145"></td>
+              <td class="Tuesday14.5" id="Tuesdayfirst145"></td>
+              <td class="Monday14.5" id="Mondaysecond145"></td>
+              <td class="Tuesday14.5" id="Tuesdaysecond145"></td>
               <td class="Friday14.5"></td>
             </tr>
             <tr>
               <th scope="row">4:00-5:30</th>
-              <td class="Monday16.0"></td>
-              <td class="Tuesday16.0"></td>
-              <td class="Monday16.0"></td>
-              <td class="Tuesday16.0"></td>
+              <td class="Monday16.0" id="Mondayfirst160"></td>
+              <td class="Tuesday16.0" id="Tuesdayfirst160"></td>
+              <td class="Monday16.0" id="Mondaysecond160"></td>
+              <td class="Tuesday16.0" id="Tuesdayfirst160"></td>
               <td class="Friday16.0"></td>
             </tr>
           </tbody>
@@ -344,7 +344,55 @@
                 setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
                 return;
             }
-            $(this).toggleClass('selected-cell');
+
+            if (this.className.includes("Friday9.0")){
+                $('#Fridayfirst').toggleClass('selected-cell');
+                $('#Fridaysecond').toggleClass('selected-cell');
+            }
+            else if (this.className.includes("Monday9.0")){
+                $('#Mondayfirst90').toggleClass('selected-cell');
+                $('#Mondaysecond90').toggleClass('selected-cell');
+            }
+            else if (this.className.includes("Tuesday9.0")){
+                $('#Tuesdayfirst90').toggleClass('selected-cell');
+                $('#Tuesdaysecond90').toggleClass('selected-cell');
+            }
+            else if (this.className.includes("Monday10.5")){
+                $('#Mondayfirst105').toggleClass('selected-cell');
+                $('#Mondaysecond105').toggleClass('selected-cell');
+            }
+            else if (this.className.includes("Tuesday10.5")){
+                $('#Tuesdayfirst105').toggleClass('selected-cell');
+                $('#Tuesdaysecond105').toggleClass('selected-cell');
+            }
+            else if (this.className.includes("Monday13.0")){
+                $('#Mondayfirst130').toggleClass('selected-cell');
+                $('#Mondaysecond130').toggleClass('selected-cell');
+            }
+            else if (this.className.includes("Tuesday13.0")){
+                $('#Tuesdayfirst130').toggleClass('selected-cell');
+                $('#Tuesdaysecond130').toggleClass('selected-cell');
+            }
+            else if (this.className.includes("Monday14.5")){
+                $('#Mondayfirst145').toggleClass('selected-cell');
+                $('#Mondaysecond145').toggleClass('selected-cell');
+            }
+            else if (this.className.includes("Tuesday14.5")){
+                $('#Tuesdayfirst145').toggleClass('selected-cell');
+                $('#Tuesdaysecond145').toggleClass('selected-cell');
+            }
+            else if (this.className.includes("Monday16.0")){
+                $('#Mondayfirst160').toggleClass('selected-cell');
+                $('#Mondaysecond160').toggleClass('selected-cell');
+            }
+            else if (this.className.includes("Tuesday16.0")){
+                $('#Tuesdayfirst160').toggleClass('selected-cell');
+                $('#Tuesdaysecond160').toggleClass('selected-cell');
+            }
+            else  {
+                $(this).toggleClass('selected-cell');
+            }
+
             $.ajax({
                 type: 'POST',
                 url: '/ajax/add_wish/',
