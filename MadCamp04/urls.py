@@ -28,5 +28,6 @@ urlpatterns = [
     url(r'^login/', views.my_login),
     url(r'^logout/', views.my_logout),
     url(r'^timetable/', views.timetable),
-    url(r'^database/',views.database),
+    url(r'^ajax/add_taken', views.add_taken_ajax),
+    url(r'^ajax/add_wish', views.add_wish_ajax),
 ]

@@ -47,6 +47,7 @@
         .sidebar-offcanvas {
             top: 100px;
         }
+        /*
         .searchbar-on-the-list {
             height: 42px;
             border-radius: 5px 0px 0px 0px;
@@ -72,6 +73,7 @@
             background-color: #337AB7;
             border-color: #337AB7;
         }
+        */
     </style>
   </head>
 
@@ -89,8 +91,8 @@
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="/">Home</a></li>
-            <li><a href="/timetable">TImetable</a></li>
+            <li><a href="/">Home</a></li>
+            <li class="active"><a href="/timetable">TImetable</a></li>
 
           </ul>
           <!-- 나중에 home.css 파일에 예쁘게 해서 넣기 -->
@@ -199,6 +201,7 @@
         </div>
           <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
               <div class="list-group">
+                <!--
                 <div class="input-group">
                     <input type="text" class="form-control searchbar-on-the-list" name="nickname" id="Nickname" placeholder="It is used when logging in." required>
                     <span class="input-group-btn">
@@ -208,8 +211,12 @@
                       </button>
                     </span>
                 </div>
+                -->
                 {% for info in lecture_infos %}
-                  <a href="#" class="list-group-item" onclick="onClick('{{ info.0 }}', '{{ info.2 }}')" onmouseover="mouse('{{ info.0 }}','{{ info.1 }}','{{ info.2 }}')" onmouseout="offmouse('{{ info.2 }}')">{{ info.0 }} ({{ info.1 }})</a>
+                  <a href="#" class="list-group-item"
+                     onclick="$(this).toggleClass('active'); onClick('{{ info.0 }}', '{{ info.2 }}');"
+                     onmouseover="mouse('{{ info.0 }}','{{ info.1 }}','{{ info.2 }}')"
+                     onmouseout="offmouse('{{ info.2 }}')">{{ info.0 }} ({{ info.1 }})</a>
                 {% endfor %}
               </div>
           </div><!--/.sidebar-offcanvas-->
@@ -220,78 +227,12 @@
         <p>&copy; Guldam&Jaesung 2017</p>
       </footer>
     </div><!--/.container-->
-    <div id="snackbar">Log in failed</div>
+    <div id="snackbar">You already wish that block</div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="/media/js/bootstrap.js"></script>
     <script type="text/javascript" src="/media/js/Example.Modal.js"></script>
     <script type="text/javascript">
-
-var csrf_token = getCookie('csrftoken');
-
-
-
-        function mouse(a,b,c){
-               if(c==='Friday13.0') {
-                   document.getElementsByClassName(c)[0].innerHTML=a.concat(" ",'(',b,')');
-                   document.getElementsByClassName(c)[0].style.backgroundColor='#C8C8C8' ;
-               }
-               else {
-                   document.getElementsByClassName(c)[0].innerHTML=a.concat(" ",'(',b,')');
-                   document.getElementsByClassName(c)[0].style.backgroundColor='#C8C8C8' ;
-                   document.getElementsByClassName(c)[1].style.backgroundColor='#C8C8C8' ;
-                   document.getElementsByClassName(c)[1].innerHTML=a.concat(" ",'(',b,')') }
-               }
-
-        function offmouse(c) {
-            var isClicked = document.getElementsByClassName(c)[0].classList.contains('block-clicked');
-            if (!isClicked) {
-                if(c.includes('Friday13.0')) {
-                    document.getElementsByClassName(c)[0].innerHTML='';
-                    document.getElementsByClassName(c)[0].style.backgroundColor='';
-                }
-                else {
-                    document.getElementsByClassName(c)[0].innerHTML='';
-                    document.getElementsByClassName(c)[1].innerHTML='';
-                    document.getElementsByClassName(c)[0].style.backgroundColor='';
-                    document.getElementsByClassName(c)[1].style.backgroundColor='';
-                }
-            }
-        }
-
-
-
-         var httpRequest;
-         if (window.XMLHttpRequest) { // 모질라, 사파리등 그외 브라우저, ...
-         httpRequest = new XMLHttpRequest();
-         } else if (window.ActiveXObject) { // IE 8 이상
-         httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
-         };
-
-         httpRequest.onreadystatechange = function(){
-         // process the server response
-         };
-
-
-        function onClick(a,c) {
-
-            if(c==='Friday13.0') {
-                document.getElementsByClassName(c)[0].classList.toggle('block-clicked');
-            }
-            else {
-                document.getElementsByClassName(c)[0].classList.toggle('block-clicked');
-                document.getElementsByClassName(c)[1].classList.toggle('block-clicked');
-            };
-
-
-            $.ajax({
-                type: 'POST',
-                url: '/database/',
-                data: { 'lecturename' : a},
-                'csrfmiddlewaretoken': '{{ csrf_token }}',
-         });
-         }
-
         function getCookie(name) {
             var cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -308,26 +249,85 @@ var csrf_token = getCookie('csrftoken');
             return cookieValue;
         }
         var csrftoken = getCookie('csrftoken');
+        function mouse(lecture_name, professor_name, classOfCell) {
+            document.getElementsByClassName(classOfCell)[0].innerHTML=lecture_name.concat(' (',professor_name,')');
+            document.getElementsByClassName(classOfCell)[0].style.backgroundColor='#C8C8C8' ;
+            if(classOfCell!=='Friday13.0') {
+                document.getElementsByClassName(classOfCell)[1].style.backgroundColor='#C8C8C8' ;
+                document.getElementsByClassName(classOfCell)[1].innerHTML=lecture_name.concat(' (',professor_name,')')
+            }
+        }
+
+        function offmouse(classOfCell) {
+            var isClicked = document.getElementsByClassName(classOfCell)[0].classList.contains('block-clicked');
+            if (!isClicked) {
+                document.getElementsByClassName(classOfCell)[0].innerHTML='';
+                document.getElementsByClassName(classOfCell)[0].style.backgroundColor='';
+                if(!classOfCell.includes('Friday13.0')) {
+                    document.getElementsByClassName(classOfCell)[1].innerHTML='';
+                    document.getElementsByClassName(classOfCell)[1].style.backgroundColor='';
+                }
+            }
+        }
 
 
+        function onClick(lecture_name,classOfCell) {
+            console.log('{{ csrf_token }}');
+            var first_cell = document.getElementsByClassName(classOfCell)[0];
+            var x = document.getElementById("snackbar");
+            if (first_cell.classList.contains('selected-cell')) {
+                console.log('you already wish that block');
+                // Add the "show" class to snackbar
+                x.innerHTML = "You already wish that block";
+                x.className = "show";
+                // After 3 seconds, remove the show class from snackbar
+                setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+                return;
+            }
+            if (classOfCell === 'Friday13.0') {
+                document.getElementsByClassName(classOfCell)[0].classList.toggle('block-clicked');
+            } else {
+                 var second_cell = document.getElementsByClassName(classOfCell)[1];
+                 if (second_cell.classList.contains('selected-cell')) {
+                        console.log('you already wish that block');
+                        // Add the "show" class to snackbar
+                        x.innerHTML = "You already wish that block";
+                        x.className = "show";
+                        // After 3 seconds, remove the show class from snackbar
+                        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+                        return;
+                 }
+                document.getElementsByClassName(classOfCell)[0].classList.toggle('block-clicked');
+                document.getElementsByClassName(classOfCell)[1].classList.toggle('block-clicked');
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/ajax/add_taken/',
+                data: {'taken_lecture_name': lecture_name},
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            });
+         }
 
         $('.table td').click(function() {
             // cell was clicked
+            var classOfCell = $(this).attr('class');
+            if ($(this).hasClass('block-clicked')) {
+                var x = document.getElementById("snackbar");
+                // Add the "show" class to snackbar
+                x.innerHTML = "You already took that block";
+                x.className = "show";
+                // After 3 seconds, remove the show class from snackbar
+                setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+                return;
+            }
             $(this).toggleClass('selected-cell');
-        });
-       {% comment %} $.ajax({
+            $.ajax({
                 type: 'POST',
-                url: '/ajax/duplicate/',
-                data: {
-                    'nickname': document.getElementById('Nickname').value,
-                    'csrfmiddlewaretoken': '{{ csrf_token }}'
-                },
-                success: function(response){
-                    // do something with response
-                    response['is_duplicate']
-
-                }
-            });{% endcomment %}
+                url: '/ajax/add_wish/',
+                data: {'wish_time_slot': classOfCell},
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            });
+        });
     </script>
   </body>
 </html>

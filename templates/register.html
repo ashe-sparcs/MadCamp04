@@ -41,6 +41,7 @@
                   <button id="check-duplicate-button" type="button" class="btn btn-success">Check duplicate<i class="fa fa-mail-forward spaceLeft"></i></button>
                 </span>
               </div>
+              <div style="font-weight:bold; color:#000000" id="nickname-checking" hidden>Duplicate checking...</div>
               <div style="font-weight:bold; color:#FF0000" id="nickname-duplicate" hidden>That nickname is already taken by someone else.</div>
               <div style="font-weight:bold;color:#449d44" id="nickname-unique" hidden>You can use that nickname.</div>
             </div>
@@ -83,6 +84,7 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/media/js/bootstrap.min.js"></script>
     <script type="text/javascript">
+        /*
         function getCookie(name) {
             var cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -98,6 +100,7 @@
             }
             return cookieValue;
         }
+        */
 
         function validate() {
             if (isDuplicate) {
@@ -111,7 +114,7 @@
 
         var isPasswordSame = false;
         var isDuplicate = true;
-        var csrftoken = getCookie('csrftoken');
+        //var csrftoken = getCookie('csrftoken');
         $('#InputPassword2').on('change keyup paste', function () {
             if (document.getElementById('InputPassword1').value !== document.getElementById('InputPassword2').value) {
                 $('#password-match').hide();
@@ -127,6 +130,11 @@
 
 
         $('#check-duplicate-button').click(function () {
+            if (!Boolean(document.getElementById('Nickname').value)) {
+                alert('Enter nickname.');
+                return;
+            }
+            $('#nickname-checking').show();
             $.ajax({
                 type: 'POST',
                 url: '/ajax/duplicate/',
@@ -137,10 +145,12 @@
                 success: function(response){
                     // do something with response
                     if (response['is_duplicate']) {
+                        $('#nickname-checking').hide();
                         $('#nickname-unique').hide();
                         $('#nickname-duplicate').show();
                         isDuplicate = true;
                     } else {
+                        $('#nickname-checking').hide();
                         $('#nickname-duplicate').hide();
                         $('#nickname-unique').show();
                         isDuplicate = false;

@@ -212,12 +212,13 @@ def timetable(request):
     return render(request, 'timetable.html', {'lecture_infos': lecture_infos})
 
 
-def database(request):
-    logging.basicConfig(level=logging.DEBUG)
-    logging.debug("디버깅용 로그~~")
-    logging.info("도움이 되는 정보를 남겨요~")
-    logging.warning("주의해야되는곳!")
-    logging.error("에러!!!")
-    logging.critical("심각한 에러!!")
+def add_taken_ajax(request):
+    taken_lecture_name = request.POST['taken_lecture_name']
+    response_data = {}
+    taken_lecture = Lecture.objects.filter(lecture_name=taken_lecture_name)[0]
+    print(taken_lecture.professor_name)
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
 
-    return render(request, "home.html")
+
+def add_wish_ajax(request):
+    return HttpResponse('yo');
