@@ -350,27 +350,29 @@
          }
 
         $('.table td' ).mouseover(
-          {% comment %}  console.log(typeof(this.className));{% endcomment %}
-
-            function(){
-                if (this.className =="Friday13.0" || this.className=="Friday14.5" || this.className == "Friday16.0")
-                { document.getElementsByClassName(this.className)[0].style.backgroundColor ='#ececec'}
-                else{
-                     document.getElementsByClassName(this.className)[0].style.backgroundColor='#ececec';
-                    document.getElementsByClassName(this.className)[1].style.backgroundColor='#ececec';
+            function() {
+                if (!this.className.includes('block-clicked')) {
+                    if (this.className === "Friday13.0" || this.className === "Friday14.5" || this.className === "Friday16.0") {
+                        document.getElementsByClassName(this.className)[0].style.backgroundColor = '#ececec'
+                    }
+                    else {
+                        document.getElementsByClassName(this.className)[0].style.backgroundColor = '#ececec';
+                        document.getElementsByClassName(this.className)[1].style.backgroundColor = '#ececec';
+                    }
                 }
             }
         );
         $('.table td' ).mouseout(
-            function(){
-                if (this.className =="Friday13.0" || this.className=="Friday14.5" || this.className == "Friday16.0")
-                { document.getElementsByClassName(this.className)[0].style.backgroundColor =''}
-                else{
-                     document.getElementsByClassName(this.className)[0].style.backgroundColor='';
-                    document.getElementsByClassName(this.className)[1].style.backgroundColor='';
+            function() {
+                if (!this.className.includes('block-clicked')) {
+                    if (this.className === "Friday13.0" || this.className === "Friday14.5" || this.className === "Friday16.0") {
+                        document.getElementsByClassName(this.className)[0].style.backgroundColor = ''
+                    }
+                    else {
+                        document.getElementsByClassName(this.className)[0].style.backgroundColor = '';
+                        document.getElementsByClassName(this.className)[1].style.backgroundColor = '';
+                    }
                 }
-
-
             }
         );
 
@@ -445,7 +447,6 @@
                 'csrfmiddlewaretoken': '{{ csrf_token }}',
                 success: function(response){
                     // do something with response
-                    response['is_duplicate']
 
                 }
             });
