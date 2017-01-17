@@ -216,9 +216,10 @@ def add_taken_ajax(request):
     taken_lecture_name = request.POST['taken_lecture_name']
     response_data = {}
     taken_lecture = Lecture.objects.filter(lecture_name=taken_lecture_name)[0]
+    response_data['professor_name'] = taken_lecture.professor_name
     print(taken_lecture.professor_name)
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
 def add_wish_ajax(request):
-    return HttpResponse('yo');
+    return HttpResponse('yo')

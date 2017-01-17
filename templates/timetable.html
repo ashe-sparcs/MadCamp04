@@ -248,7 +248,12 @@
             }
             return cookieValue;
         }
-        var csrftoken = getCookie('csrftoken');
+        $(function () {
+            var csrftoken = getCookie('csrftoken');
+            $.ajaxSetup({
+                headers: { "X-CSRFToken": csrftoken }
+            });
+        });
         function mouse(lecture_name, professor_name, classOfCell) {
             document.getElementsByClassName(classOfCell)[0].innerHTML=lecture_name.concat(' (',professor_name,')');
             document.getElementsByClassName(classOfCell)[0].style.backgroundColor='#C8C8C8' ;
@@ -303,8 +308,13 @@
             $.ajax({
                 type: 'POST',
                 url: '/ajax/add_taken/',
-                data: {'taken_lecture_name': lecture_name},
-                'csrfmiddlewaretoken': '{{ csrf_token }}'
+                data: {
+                    'taken_lecture_name': lecture_name
+                },
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                success: function(response){
+
+                }
             });
          }
 
@@ -324,8 +334,14 @@
             $.ajax({
                 type: 'POST',
                 url: '/ajax/add_wish/',
-                data: {'wish_time_slot': classOfCell},
-                'csrfmiddlewaretoken': '{{ csrf_token }}'
+                data: {
+                    'wish_time_slot': classOfCell
+                },
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                success: function(response){
+                    // do something with response
+
+                }
             });
         });
     </script>
