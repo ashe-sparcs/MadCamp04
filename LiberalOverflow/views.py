@@ -212,6 +212,8 @@ def timetable(request):
     # fetch time table and render.
     lectures = list(Lecture.objects.all())
     taken_lectures = list(user_profile.taken_lectures.all())
+    wish_time_slots = list(user_profile.wish_time_slots.all())
+    wish_time_slots_class = [slot.day_of_week + str(slot.start_time) for slot in wish_time_slots]
     lecture_infos = []
     for lecture in lectures:
         if lecture in taken_lectures:
@@ -220,7 +222,8 @@ def timetable(request):
             is_taken = 0
         lecture_infos.append([lecture.lecture_name, lecture.professor_name, lecture.time_slots.all()[0].day_of_week + str(lecture.time_slots.all()[0].start_time), is_taken])
     context = {
-        'lecture_infos': lecture_infos
+        'lecture_infos': lecture_infos,
+        'wish_time_slots_class': wish_time_slots_class
     }
     return render(request, 'timetable.html', context)
 

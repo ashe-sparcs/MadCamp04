@@ -276,11 +276,9 @@
 
 
         function onClick(lecture_name,classOfCell) {
-            console.log('{{ csrf_token }}');
             var first_cell = document.getElementsByClassName(classOfCell)[0];
             var x = document.getElementById("snackbar");
             if (first_cell.classList.contains('selected-cell')) {
-                console.log('you already wish that block');
                 // Add the "show" class to snackbar
                 x.innerHTML = "You already wish that block";
                 x.className = "show";
@@ -293,7 +291,6 @@
             } else {
                  var second_cell = document.getElementsByClassName(classOfCell)[1];
                  if (second_cell.classList.contains('selected-cell')) {
-                        console.log('you already wish that block');
                         // Add the "show" class to snackbar
                         x.innerHTML = "You already wish that block";
                         x.className = "show";
@@ -486,16 +483,68 @@
         // fetching
         var lec_infos = [];
         lec_infos = {{ lecture_infos|safe }};
-        console.log(lec_infos);
         $.each( $('.list-group-item'), function( key, value ) {
-            console.log('list group item');
             if (lec_infos[key][3] === 1) {
+                value.className += ' active';
                 mouse(lec_infos[key][0], lec_infos[key][1], lec_infos[key][2]);
                 if (lec_infos[key][2] === 'Friday13.0') {
                     document.getElementsByClassName(lec_infos[key][2])[0].classList.toggle('block-clicked');
                 } else {
                     document.getElementsByClassName(lec_infos[key][2])[0].classList.toggle('block-clicked');
                     document.getElementsByClassName(lec_infos[key][2])[1].classList.toggle('block-clicked');
+                }
+            }
+        });
+        $.each( $('.table td'), function( key, value ) {
+            var wish_time_slots_class = null;
+            wish_time_slots_class = {{ wish_time_slots_class|safe }};
+            if (wish_time_slots_class.indexOf(value.className) >= 0) {
+                if (value.className.includes("Friday9.0")){
+                    $('#Fridayfirst').toggleClass('selected-cell');
+                    $('#Fridaysecond').toggleClass('selected-cell');
+                }
+                else if (value.className.includes("Monday9.0")){
+                    $('#Mondayfirst90').toggleClass('selected-cell');
+                    $('#Mondaysecond90').toggleClass('selected-cell');
+                }
+                else if (value.className.includes("Tuesday9.0")){
+                    $('#Tuesdayfirst90').toggleClass('selected-cell');
+                    $('#Tuesdaysecond90').toggleClass('selected-cell');
+                }
+                else if (value.className.includes("Monday10.5")){
+                    $('#Mondayfirst105').toggleClass('selected-cell');
+                    $('#Mondaysecond105').toggleClass('selected-cell');
+                }
+                else if (value.className.includes("Tuesday10.5")){
+                    $('#Tuesdayfirst105').toggleClass('selected-cell');
+                    $('#Tuesdaysecond105').toggleClass('selected-cell');
+                }
+                else if (value.className.includes("Monday13.0")){
+                    $('#Mondayfirst130').toggleClass('selected-cell');
+                    $('#Mondaysecond130').toggleClass('selected-cell');
+                }
+                else if (value.className.includes("Tuesday13.0")){
+                    $('#Tuesdayfirst130').toggleClass('selected-cell');
+                    $('#Tuesdaysecond130').toggleClass('selected-cell');
+                }
+                else if (value.className.includes("Monday14.5")){
+                    $('#Mondayfirst145').toggleClass('selected-cell');
+                    $('#Mondaysecond145').toggleClass('selected-cell');
+                }
+                else if (value.className.includes("Tuesday14.5")){
+                    $('#Tuesdayfirst145').toggleClass('selected-cell');
+                    $('#Tuesdaysecond145').toggleClass('selected-cell');
+                }
+                else if (value.className.includes("Monday16.0")){
+                    $('#Mondayfirst160').toggleClass('selected-cell');
+                    $('#Mondaysecond160').toggleClass('selected-cell');
+                }
+                else if (value.className.includes("Tuesday16.0")){
+                    $('#Tuesdayfirst160').toggleClass('selected-cell');
+                    $('#Tuesdaysecond160').toggleClass('selected-cell');
+                }
+                else  {
+                    $(value).toggleClass('selected-cell');
                 }
             }
         });
