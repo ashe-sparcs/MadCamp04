@@ -424,6 +424,23 @@
                 }
             });
         });
+
+        // fetching
+        var lec_infos = [];
+        lec_infos = {{ lecture_infos|safe }};
+        console.log(lec_infos);
+        $.each( $('.list-group-item'), function( key, value ) {
+            console.log('list group item');
+            if (lec_infos[key][3] === 1) {
+                mouse(lec_infos[key][0], lec_infos[key][1], lec_infos[key][2]);
+                if (lec_infos[key][2] === 'Friday13.0') {
+                    document.getElementsByClassName(lec_infos[key][2])[0].classList.toggle('block-clicked');
+                } else {
+                    document.getElementsByClassName(lec_infos[key][2])[0].classList.toggle('block-clicked');
+                    document.getElementsByClassName(lec_infos[key][2])[1].classList.toggle('block-clicked');
+                }
+            }
+        });
     </script>
   </body>
 </html>

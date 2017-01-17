@@ -214,8 +214,15 @@ def timetable(request):
     taken_lectures = list(user_profile.taken_lectures.all())
     lecture_infos = []
     for lecture in lectures:
-        lecture_infos.append([lecture.lecture_name, lecture.professor_name, lecture.time_slots.all()[0].day_of_week+ str(lecture.time_slots.all()[0].start_time)])
-    return render(request, 'timetable.html', {'lecture_infos': lecture_infos, 'taken_lectures': taken_lectures})
+        if lecture in taken_lectures:
+            is_taken = 1
+        else:
+            is_taken = 0
+        lecture_infos.append([lecture.lecture_name, lecture.professor_name, lecture.time_slots.all()[0].day_of_week + str(lecture.time_slots.all()[0].start_time), is_taken])
+    context = {
+        'lecture_infos': lecture_infos
+    }
+    return render(request, 'timetable.html', context)
 
 
 def add_taken_ajax(request):
