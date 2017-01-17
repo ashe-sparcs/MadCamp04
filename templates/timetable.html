@@ -437,19 +437,50 @@
             else  {
                 $(this).toggleClass('selected-cell');
             }
-
-            $.ajax({
-                type: 'POST',
-                url: '/ajax/add_wish/',
-                data: {
-                    'wish_time_slot': classOfCell
-                },
-                'csrfmiddlewaretoken': '{{ csrf_token }}',
-                success: function(response){
-                    // do something with response
-
-                }
-            });
+            if (this.className.includes('selected-cell')) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/ajax/add_wish/',
+                    data: {
+                        'wish_time_slot': classOfCell
+                    },
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    success: function (response) {
+                        // do something with response
+                        if (response['success']) {
+                            var x = document.getElementById("snackbar");
+                            // Add the "show" class to snackbar
+                            x.innerHTML = "Wish added";
+                            x.className = "show";
+                            // After 3 seconds, remove the show class from snackbar
+                            setTimeout(function () {
+                                x.className = x.className.replace("show", "");
+                            }, 3000);
+                        }
+                    }
+                });
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    url: '/ajax/delete_wish/',
+                    data: {
+                        'wish_time_slot': classOfCell
+                    },
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    success: function (response) {
+                        if (response['success']) {
+                            var x = document.getElementById("snackbar");
+                            // Add the "show" class to snackbar
+                            x.innerHTML = "Wish deleted";
+                            x.className = "show";
+                            // After 3 seconds, remove the show class from snackbar
+                            setTimeout(function () {
+                                x.className = x.className.replace("show", "");
+                            }, 3000);
+                        }
+                    }
+                });
+            }
         });
 
         // fetching

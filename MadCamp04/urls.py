@@ -31,4 +31,5 @@ urlpatterns = [
     url(r'^ajax/add_taken', views.add_taken_ajax),
     url(r'^ajax/delete_taken', views.delete_taken_ajax),
     url(r'^ajax/add_wish', views.add_wish_ajax),
+    url(r'^ajax/delete_wish', views.delete_wish_ajax),
 ]

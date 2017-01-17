@@ -252,4 +252,34 @@ def delete_taken_ajax(request):
 
 
 def add_wish_ajax(request):
-    return HttpResponse('yo')
+    response_data = {}
+    wish_time_slot_class = request.POST['wish_time_slot']
+    wish_time_slot_parsed = wish_time_slot_class.split('y')
+    wish_dow = wish_time_slot_parsed[0] + 'y'
+    wish_start_time = float(wish_time_slot_parsed[1])
+    wish_time_slot = TimeSlot.objects.filter(day_of_week=wish_dow, start_time=wish_start_time)[0]
+    # add lecture to user timetable ##########
+    user_profile = UserProfile.objects.get(user=request.user)
+    # delete와 아래의 한줄만 다르므로 리팩토링이 가능하다. 클라 단에서 아작스 리퀘스트 보낼 때 불리언 필드 하나 던져서.
+    user_profile.wish_time_slots.add(wish_time_slot)
+    user_profile.save()
+    ##########################################
+    response_data['success'] = True
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
+def delete_wish_ajax(request):
+    response_data = {}
+    wish_time_slot_class = request.POST['wish_time_slot']
+    wish_time_slot_parsed = wish_time_slot_class.split('y')
+    wish_dow = wish_time_slot_parsed[0] + 'y'
+    wish_start_time = wish_time_slot_parsed[1]
+    wish_start_time = float(wish_start_time.split()[0])
+    wish_time_slot = TimeSlot.objects.filter(day_of_week=wish_dow, start_time=wish_start_time)[0]
+    # add lecture to user timetable ##########
+    user_profile = UserProfile.objects.get(user=request.user)
+    user_profile.wish_time_slots.remove(wish_time_slot)
+    user_profile.save()
+    ##########################################
+    response_data['success'] = True
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
