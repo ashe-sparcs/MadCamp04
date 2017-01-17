@@ -286,22 +286,26 @@
                 x.innerHTML = "You already wish that block";
                 x.className = "show";
                 // After 3 seconds, remove the show class from snackbar
-                setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+                setTimeout(function () {
+                    x.className = x.className.replace("show", "");
+                }, 3000);
                 return;
             }
             if (classOfCell === 'Friday13.0') {
                 document.getElementsByClassName(classOfCell)[0].classList.toggle('block-clicked');
             } else {
-                 var second_cell = document.getElementsByClassName(classOfCell)[1];
-                 if (second_cell.classList.contains('selected-cell')) {
-                        console.log('you already wish that block');
-                        // Add the "show" class to snackbar
-                        x.innerHTML = "You already wish that block";
-                        x.className = "show";
-                        // After 3 seconds, remove the show class from snackbar
-                        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
-                        return;
-                 }
+                var second_cell = document.getElementsByClassName(classOfCell)[1];
+                if (second_cell.classList.contains('selected-cell')) {
+                    console.log('you already wish that block');
+                    // Add the "show" class to snackbar
+                    x.innerHTML = "You already wish that block";
+                    x.className = "show";
+                    // After 3 seconds, remove the show class from snackbar
+                    setTimeout(function () {
+                        x.className = x.className.replace("show", "");
+                    }, 3000);
+                    return;
+                }
                 document.getElementsByClassName(classOfCell)[0].classList.toggle('block-clicked');
                 document.getElementsByClassName(classOfCell)[1].classList.toggle('block-clicked');
             }
@@ -327,10 +331,28 @@
                     }
                 });
             } else {
-                // delete
-
+                $.ajax({
+                    type: 'POST',
+                    url: '/ajax/delete_taken/',
+                    data: {
+                        'taken_lecture_name': lecture_name
+                    },
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    success: function (response) {
+                        if (response['success']) {
+                            var x = document.getElementById("snackbar");
+                            // Add the "show" class to snackbar
+                            x.innerHTML = "Deleted";
+                            x.className = "show";
+                            // After 3 seconds, remove the show class from snackbar
+                            setTimeout(function () {
+                                x.className = x.className.replace("show", "");
+                            }, 3000);
+                        }
+                    }
+                });
             }
-         }
+        }
 
         $('.table td').click(function() {
             // cell was clicked
@@ -344,7 +366,11 @@
                 setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
                 return;
             }
-            $(this).toggleClass('selected-cell');
+            $( '.'.concat(this.className)).toggleClass('selected-cell');
+
+            // 같이 색칠될 부분 색칠.
+
+
             $.ajax({
                 type: 'POST',
                 url: '/ajax/add_wish/',

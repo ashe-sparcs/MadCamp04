@@ -29,5 +29,6 @@ urlpatterns = [
     url(r'^logout/', views.my_logout),
     url(r'^timetable/', views.timetable),
     url(r'^ajax/add_taken', views.add_taken_ajax),
+    url(r'^ajax/delete_taken', views.delete_taken_ajax),
     url(r'^ajax/add_wish', views.add_wish_ajax),
 ]

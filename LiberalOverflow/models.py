@@ -21,5 +21,7 @@ class UserProfile(models.Model):
     # authenticationCode : randomly generated UUID
     authenticationCode = models.CharField(max_length=40)
     taken_lectures = models.ManyToManyField(Lecture)
+
     wish_time_slots = models.ManyToManyField(TimeSlot)
+
 

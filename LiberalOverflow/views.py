@@ -223,12 +223,25 @@ def add_taken_ajax(request):
     taken_lecture_name = request.POST['taken_lecture_name']
     response_data = {}
     taken_lecture = Lecture.objects.filter(lecture_name=taken_lecture_name)[0]
-    response_data['success'] = True
     # add lecture to user timetable ##########
     user_profile = UserProfile.objects.get(user=request.user)
     user_profile.taken_lectures.add(taken_lecture)
     user_profile.save()
     ##########################################
+    response_data['success'] = True
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
+def delete_taken_ajax(request):
+    taken_lecture_name = request.POST['taken_lecture_name']
+    response_data = {}
+    taken_lecture = Lecture.objects.filter(lecture_name=taken_lecture_name)[0]
+    #################################
+    user_profile = UserProfile.objects.get(user=request.user)
+    user_profile.taken_lectures.remove(taken_lecture)
+    user_profile.save()
+    #################################
+    response_data['success'] = True
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
