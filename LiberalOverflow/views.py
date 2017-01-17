@@ -217,7 +217,7 @@ def timetable(request):
         lecture_infos.append([lecture.lecture_name, lecture.professor_name, lecture.time_slots.all()[0].day_of_week+ str(lecture.time_slots.all()[0].start_time)])
     return render(request, 'timetable.html', {'lecture_infos': lecture_infos, 'taken_lectures': taken_lectures})
 
-
+@csrf_exempt
 def add_taken_ajax(request):
     taken_lecture_name = request.POST['taken_lecture_name']
     response_data = {}
@@ -243,6 +243,6 @@ def delete_taken_ajax(request):
     response_data['success'] = True
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
-
+@csrf_exempt
 def add_wish_ajax(request):
-    return HttpResponse('yo')
+
