@@ -28,4 +28,5 @@ urlpatterns = [
     url(r'^login/', views.my_login),
     url(r'^logout/', views.my_logout),
     url(r'^timetable/', views.timetable),
+    url(r'^database/',views.database),
 ]

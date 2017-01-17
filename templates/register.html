@@ -98,6 +98,7 @@
             }
             return cookieValue;
         }
+
         function validate() {
             if (isDuplicate) {
                 alert('Nickname duplicate check needed.');
@@ -107,6 +108,7 @@
                 document.getElementById('myForm').submit();
             }
         }
+
         var isPasswordSame = false;
         var isDuplicate = true;
         var csrftoken = getCookie('csrftoken');
@@ -121,6 +123,9 @@
                 isPasswordSame = true;
             }
         });
+
+
+
         $('#check-duplicate-button').click(function () {
             $.ajax({
                 type: 'POST',

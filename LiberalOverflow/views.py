@@ -27,6 +27,10 @@ except ImportError:
 import uuid
 import json
 
+
+import logging
+
+
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/gmail-python-quickstart.json
 SCOPES = 'https://mail.google.com'
@@ -206,3 +210,14 @@ def timetable(request):
     for lecture in lectures:
         lecture_infos.append([lecture.lecture_name, lecture.professor_name, lecture.time_slots.all()[0].day_of_week+ str(lecture.time_slots.all()[0].start_time)])
     return render(request, 'timetable.html', {'lecture_infos': lecture_infos})
+
+
+def database(request):
+    logging.basicConfig(level=logging.DEBUG)
+    logging.debug("디버깅용 로그~~")
+    logging.info("도움이 되는 정보를 남겨요~")
+    logging.warning("주의해야되는곳!")
+    logging.error("에러!!!")
+    logging.critical("심각한 에러!!")
+
+    return render(request, "home.html")

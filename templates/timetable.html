@@ -85,13 +85,13 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">LiberalOverflow</a>
+          <a class="navbar-brand" href="/">LiberalExchange</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="#review">Review</a></li>
-            <li><a href="#qanda">Q&A</a></li>
+            <li class="active"><a href="/">Home</a></li>
+            <li><a href="/timetable">TImetable</a></li>
+
           </ul>
           <!-- 나중에 home.css 파일에 예쁘게 해서 넣기 -->
           <ul class="nav navbar-nav" style="float: right;">
@@ -209,7 +209,7 @@
                     </span>
                 </div>
                 {% for info in lecture_infos %}
-                  <a href="#" class="list-group-item" onclick="onClick('{{ info.2 }}')" onmouseover="mouse('{{ info.0 }}','{{ info.1 }}','{{ info.2 }}')" onmouseout="offmouse('{{ info.2 }}')">{{ info.0 }} ({{ info.1 }})</a>
+                  <a href="#" class="list-group-item" onclick="onClick('{{ info.0 }}', '{{ info.2 }}')" onmouseover="mouse('{{ info.0 }}','{{ info.1 }}','{{ info.2 }}')" onmouseout="offmouse('{{ info.2 }}')">{{ info.0 }} ({{ info.1 }})</a>
                 {% endfor %}
               </div>
           </div><!--/.sidebar-offcanvas-->
@@ -226,6 +226,10 @@
     <script src="/media/js/bootstrap.js"></script>
     <script type="text/javascript" src="/media/js/Example.Modal.js"></script>
     <script type="text/javascript">
+
+var csrf_token = getCookie('csrftoken');
+
+
 
         function mouse(a,b,c){
                if(c==='Friday13.0') {
@@ -255,7 +259,21 @@
             }
         }
 
-        function onClick(c) {
+
+
+         var httpRequest;
+         if (window.XMLHttpRequest) { // 모질라, 사파리등 그외 브라우저, ...
+         httpRequest = new XMLHttpRequest();
+         } else if (window.ActiveXObject) { // IE 8 이상
+         httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+         };
+
+         httpRequest.onreadystatechange = function(){
+         // process the server response
+         };
+
+
+        function onClick(a,c) {
 
             if(c==='Friday13.0') {
                 document.getElementsByClassName(c)[0].classList.toggle('block-clicked');
@@ -263,8 +281,16 @@
             else {
                 document.getElementsByClassName(c)[0].classList.toggle('block-clicked');
                 document.getElementsByClassName(c)[1].classList.toggle('block-clicked');
-            }
-        }
+            };
+
+
+            $.ajax({
+                type: 'POST',
+                url: '/database/',
+                data: { 'lecturename' : a},
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+         });
+         }
 
         function getCookie(name) {
             var cookieValue = null;
