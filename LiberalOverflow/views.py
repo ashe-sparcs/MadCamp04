@@ -338,14 +338,15 @@ def chat(request):
     if len(chat_arg) > 30:
         # id로 접근, 이미 채팅방이 존재함.
         chat_room = ChatRoom.objects.filter(room_id=chat_arg)[0]
-        return render(request, 'chat.html', {'chat_room': chat_room})
+        chat_to = chat_room.userprofile_set.exclude(user=request.user)[0].user
+        return render(request, 'chat.html', {'chat_room': chat_room, 'chat_to': chat_to})
     else:
         # 상대 유저로 접근, 채팅방이 없을 수 있음
         chat_to = User.objects.filter(username=chat_arg)[0]
         for room in request.user.userprofile.chat_rooms.all():
             if chat_arg == room.userprofile_set.exclude(user=request.user)[0].user.username:
                 # 이미 채팅방이 존재함
-                return render(request, 'chat.html', {'chat_room': room})
+                return render(request, 'chat.html', {'chat_room': room, 'chat_to': chat_to})
         # 채팅방이 존재하지 않음. 만들고 chat_rooms에 추가
         new_chat_room = ChatRoom()
         new_chat_room.save()
@@ -355,4 +356,4 @@ def chat(request):
         chat_to.userprofile.chat_rooms.add(new_chat_room)
         request.user.userprofile.save()
         chat_to.userprofile.save()
-        return render(request, 'chat.html', {'chat_room': new_chat_room})
+        return render(request, 'chat.html', {'chat_room': new_chat_room, 'chat_to': chat_to})

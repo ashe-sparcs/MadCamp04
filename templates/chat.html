@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>{{ chat_room.room_id }}</title>
+    <title>Chat with {{ chat_to.username }}</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; }
@@ -22,13 +22,27 @@
     <script src="http://code.jquery.com/jquery-3.1.1.js"></script>
     <script>
         var socket = io('localhost:3000');
+        socket.on('connect', function () {
+            socket.emit('joinRoom', {
+                id: '{{ chat_room.room_id }}',
+                username: '{{ request.user.username }}'
+            });
+        });
         $('form').submit(function(){
-            socket.emit('chat message', $('#m').val());
+            socket.emit('chat message', {
+                id: '{{ chat_room.room_id }}',
+                message:'{{ request.user.username }} : '+ $('#m').val()
+            });
             $('#m').val('');
             return false;
         });
         socket.on('chat message', function(msg){
             $('#messages').append($('<li>').text(msg));
+        });
+        socket.on('notification', function(arg) {
+            console.log(arg);
+            var element = '<li style="color: #aaaaaa">' + arg + '</li>';
+            $('#messages').append(element);
         });
     </script>
   </body>
