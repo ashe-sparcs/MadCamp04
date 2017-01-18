@@ -132,21 +132,20 @@ def find_give_lectures(my_profile, your_profile):
 
 # Create your views here.
 def home(request):
-    # matching algorithm
-    my_profile = UserProfile.objects.filter(user=request.user)[0]
-    user_profile_all = list(UserProfile.objects.exclude(user=request.user))
-    exchangables = []
-    for user_profile in user_profile_all:
-        take_lectures = find_take_lectures(my_profile, user_profile)
-        give_lectures = find_give_lectures(my_profile, user_profile)
-        if take_lectures or give_lectures:
-            exchangables.append([user_profile.user.username, take_lectures, give_lectures])
-    context = {
-        'exchangables': exchangables
-    }
-    print(x[0] for x in exchangables)
-    print([x.lecture_name for x in exchangables[0][1]])
-    print([x.lecture_name for x in exchangables[0][2]])
+    context = {}
+    if request.user.is_authenticated:
+        # matching algorithm
+        my_profile = UserProfile.objects.filter(user=request.user)[0]
+        user_profile_all = list(UserProfile.objects.exclude(user=request.user))
+        exchangables = []
+        for user_profile in user_profile_all:
+            take_lectures = find_take_lectures(my_profile, user_profile)
+            give_lectures = find_give_lectures(my_profile, user_profile)
+            if take_lectures or give_lectures:
+                exchangables.append([user_profile.user.username, take_lectures, give_lectures])
+        context = {
+            'exchangables': exchangables
+        }
     return render(request, 'home.html', context)
 
 
