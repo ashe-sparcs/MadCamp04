@@ -19,6 +19,8 @@
     <orderEntry type="library" name="respond" level="application" />
     <orderEntry type="library" name="html5shiv" level="application" />
     <orderEntry type="library" name="jquery-3.1.1" level="application" />
+    <orderEntry type="library" name="socket.io-1.4.5" level="application" />
+    <orderEntry type="library" name="jquery-3.1.1" level="application" />
   </component>
   <component name="PackageRequirementsSettings">
     <option name="requirementsPath" value="C:\Users\Madstein\PycharmProjects\LiberalExchange\requirements.txt" />

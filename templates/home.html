@@ -101,7 +101,7 @@
           </p>
           <div class="jumbotron">
             <h1>Welcome to LiberalExchange!</h1>
-            <p>We dream of liberal exchange of lectures on liberal & humanities. <br>Log in to see your matchings.</p>
+            <p>We dream of liberal exchange of lectures on liberal & humanities. <br>{% if user.is_authenticated %}Boxes below are your matchings.{% else %}Log in to see your matchings.{% endif %}</p>
           </div>
           <div class="row">
             {% if user.is_authenticated and exchangables %}
@@ -110,7 +110,7 @@
                       <h2>{{ exchange.0 }}</h2>
                       <p>You can TAKE {% for lecture in exchange.1 %}{{ lecture.lecture_name }} ({{ lecture.professor_name }}) {% endfor %} from {{ exchange.0 }}</p>
                       <p>You can GIVE {% for lecture in exchange.2 %}{{ lecture.lecture_name }} ({{ lecture.professor_name }}) {% endfor %} to {{ exchange.0 }}</p>
-                      <p><a class="btn btn-default" href="#" role="button">Chat &raquo;</a></p>
+                      <p><a class="btn btn-default" href="/chat/{{ exchange.0 }}" role="button">Chat &raquo;</a></p>
                     </div><!--/.col-xs-6.col-lg-4-->
                 {% endfor %}
             {% else %}
@@ -137,89 +137,24 @@
         </div><!--/.col-xs-12.col-sm-9-->
 
         <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
-            <div class="portlet portlet-default">
-                <div class="portlet-heading" style="vertical-align: middle">
-                    <div class="portlet-title">
-                        <h4><i class="fa fa-circle text-green"></i> Jane Smith</h4>
-                    </div>
-                    <div class="portlet-widgets">
-                        <span class="divider"></span>
-                        <a data-toggle="collapse" data-parent="#accordion" href="#chat"><i class="fa fa-chevron-down"></i></a>
-                    </div>
-                    <div class="clearfix"></div>
-                </div>
-                <div id="chat" class="panel-collapse collapse in">
-                    <div>
-                    <div class="portlet-body chat-widget" style="overflow-y: auto; width: auto; height: 300px;">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <p class="text-center text-muted small">January 1, 2014 at 12:23 PM</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="media">
-                                    <a class="pull-left" href="#">
-                                        <img class="media-object img-circle" src="http://lorempixel.com/30/30/people/1/" alt="">
-                                    </a>
-                                    <div class="media-body">
-                                        <h4 class="media-heading">Jane Smith
-                                            <span class="small pull-right">12:23 PM</span>
-                                        </h4>
-                                        <p>Hi, I wanted to make sure you got the latest product report. Did Roddy get it to you?</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="media">
-                                    <a class="pull-left" href="#">
-                                        <img class="media-object img-circle" src="http://lorempixel.com/30/30/people/7/" alt="">
-                                    </a>
-                                    <div class="media-body">
-                                        <h4 class="media-heading">John Smith
-                                            <span class="small pull-right">12:28 PM</span>
-                                        </h4>
-                                        <p>Yeah I did. Everything looks good.</p>
-                                        <p>Did you have an update on purchase order #302?</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="media">
-                                    <a class="pull-left" href="#">
-                                        <img class="media-object img-circle" src="http://lorempixel.com/30/30/people/7/" alt="">
-                                    </a>
-                                    <div class="media-body">
-                                        <h4 class="media-heading">Jane Smith
-                                            <span class="small pull-right">12:39 PM</span>
-                                        </h4>
-                                        <p>No not yet, the transaction hasn't cleared yet. I will let you know as soon as everything goes through. Any idea where you want to get lunch today?</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                    </div>
-                    </div>
-                    <div class="portlet-footer">
-                        <form role="form">
-                            <div class="form-group">
-                                <textarea class="form-control" placeholder="Enter message..."></textarea>
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-default pull-right">Send</button>
-                                <div class="clearfix"></div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+            <div class="list-group">
+            <a href="#" class="list-group-item active">Chat Rooms and Latest Message</a>
+            {% if user.userprofile.chat_rooms %}
+                {% for room in chat_rooms %}
+                    {% with room.messages.all as messages %}
+                        {% if messages %}
+                        {% with messages|last as last_message %}
+                            <a href="chat/{{ room.room_id }}" class="list-group-item">{{ last_message.who }}: {{ last_message.what }}</a>
+                        {% endwith %}
+                        {% else %}
+                            <a href="chat/{{ room.room_id }}" class="list-group-item">No messages available</a>
+                        {% endif %}
+                    {% endwith %}
+                {% endfor %}
+            {% else %}
+                <a href="#" class="list-group-item">No chat rooms available.</a>
+            {% endif %}
+          </div>
         </div><!--/.sidebar-offcanvas-->
       </div><!--/row-->
 

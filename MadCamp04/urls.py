@@ -32,4 +32,5 @@ urlpatterns = [
     url(r'^ajax/delete_taken', views.delete_taken_ajax),
     url(r'^ajax/add_wish', views.add_wish_ajax),
     url(r'^ajax/delete_wish', views.delete_wish_ajax),
+    url(r'^chat/.+', views.chat),
 ]

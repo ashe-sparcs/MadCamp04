@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.shortcuts import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from LiberalOverflow.models import UserProfile, Lecture, TimeSlot
+from LiberalOverflow.models import UserProfile, Lecture, TimeSlot, ChatRoom, ChatMessage
 from django.contrib.auth.decorators import login_required
 
 # Import the email modules we'll need
@@ -37,6 +37,8 @@ import logging
 SCOPES = 'https://mail.google.com'
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'LiberalOverflow'
+
+log = logging.getLogger('print')
 
 
 def get_credentials():
@@ -223,12 +225,14 @@ def my_login(request):
     return render(request, 'login.html')
 
 
+@login_required(login_url='/login/')
 def my_logout(request):
     if request.user.is_authenticated():
         logout(request)
     return redirect('/')
 
 
+@login_required(login_url='/login/')
 def check_duplicate_ajax(request):
     username = request.POST['nickname']
     response_data = {}
@@ -261,6 +265,7 @@ def timetable(request):
     return render(request, 'timetable.html', context)
 
 
+@login_required(login_url='/login/')
 def add_taken_ajax(request):
     taken_lecture_name = request.POST['taken_lecture_name']
     response_data = {}
@@ -274,6 +279,7 @@ def add_taken_ajax(request):
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
+@login_required(login_url='/login/')
 def delete_taken_ajax(request):
     taken_lecture_name = request.POST['taken_lecture_name']
     response_data = {}
@@ -287,6 +293,7 @@ def delete_taken_ajax(request):
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
+@login_required(login_url='/login/')
 def add_wish_ajax(request):
     response_data = {}
     wish_time_slot_class = request.POST['wish_time_slot']
@@ -304,6 +311,7 @@ def add_wish_ajax(request):
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
+@login_required(login_url='/login/')
 def delete_wish_ajax(request):
     response_data = {}
     wish_time_slot_class = request.POST['wish_time_slot']
@@ -319,3 +327,32 @@ def delete_wish_ajax(request):
     ##########################################
     response_data['success'] = True
     return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
+@login_required(login_url='/login/')
+def chat(request):
+    # id로 접근할 때랑 상대 유저로 접근할 때랑 구분 : 그 기준은 길이가 30자 이상인지.
+    request_url = request.get_raw_uri()
+    request_url_list = request_url.split('/')
+    chat_arg = request_url_list[-1]
+    if len(chat_arg) > 30:
+        # id로 접근, 이미 채팅방이 존재함.
+        chat_room = ChatRoom.objects.filter(room_id=chat_arg)[0]
+        return render(request, 'chat.html', {'chat_room': chat_room})
+    else:
+        # 상대 유저로 접근, 채팅방이 없을 수 있음
+        chat_to = User.objects.filter(username=chat_arg)[0]
+        for room in request.user.userprofile.chat_rooms.all():
+            if chat_arg == room.userprofile_set.exclude(user=request.user)[0].user.username:
+                # 이미 채팅방이 존재함
+                return render(request, 'chat.html', {'chat_room': room})
+        # 채팅방이 존재하지 않음. 만들고 chat_rooms에 추가
+        new_chat_room = ChatRoom()
+        new_chat_room.save()
+        new_chat_room.room_id = str(uuid.uuid4())
+        new_chat_room.save()
+        request.user.userprofile.chat_rooms.add(new_chat_room)
+        chat_to.userprofile.chat_rooms.add(new_chat_room)
+        request.user.userprofile.save()
+        chat_to.userprofile.save()
+        return render(request, 'chat.html', {'chat_room': new_chat_room})
