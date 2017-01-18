@@ -101,10 +101,10 @@
           </p>
           <div class="jumbotron">
             <h1>Welcome to LiberalExchange!</h1>
-            <p>We dream of liberal exchange of lectures on liberal & humanities. Log in to see your matchings.</p>
+            <p>We dream of liberal exchange of lectures on liberal & humanities. <br>Log in to see your matchings.</p>
           </div>
           <div class="row">
-            {% if user.is_authenticated %}
+            {% if user.is_authenticated and exchangables %}
                 {% for exchange in exchangables %}
                     <div class="col-xs-6 col-lg-4">
                       <h2>{{ exchange.0 }}</h2>
@@ -115,7 +115,7 @@
                 {% endfor %}
             {% else %}
                 <div class="col-xs-6 col-lg-4">
-                  <h2>Matched user is showed here</h2>
+                  <h2>Matched user</h2>
                   <p>Lectures you can TAKE is showed here.</p>
                   <p>Lectures you can TAKE is showed here.</p>
                   <p><a class="btn btn-default" href="#" role="button">Chat &raquo;</a></p>
