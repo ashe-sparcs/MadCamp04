@@ -93,15 +93,15 @@
 
     <div class="container">
 
-      <div class="row row-offcanvas row-offcanvas-right">
+      <div class="row row-offcanvas row-offcanvas-right" style="min-height: 900px">
 
         <div class="col-xs-12 col-sm-9">
           <p class="pull-right visible-xs">
             <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
           </p>
           <div class="jumbotron">
-            <h1>Hello, world!</h1>
-            <p>This is an example to show the potential of an offcanvas layout pattern in Bootstrap. Try some responsive-range viewport sizes to see it in action.</p>
+            <h1>Welcome to LiberalExchange!</h1>
+            <p>We dream of students exchange liberal lectures with liberty. Log in to see your matchings and chat with them to exchange liberal lectures.</p>
           </div>
           <div class="row">
             {% for exchange in exchangables %}
@@ -109,17 +109,18 @@
               <h2>{{ exchange.0 }}</h2>
               <p>GET: {% for lecture in exchange.1 %}{{ lecture.lecture_name }} ({{ lecture.professor_name }}) {% endfor %}</p>
               <p>GIVE: {% for lecture in exchange.2 %}{{ lecture.lecture_name }} ({{ lecture.professor_name }}) {% endfor %}</p>
-              <p><a class="btn btn-default" href="#" role="button">Chat &raquo;</a></p>
+              <p><a id="{{ exchange.0 }}" class="btn btn-default chat-button" href="#" role="button">Chat &raquo;</a></p>
             </div><!--/.col-xs-6.col-lg-4-->
             {% endfor %}
           </div><!--/row-->
         </div><!--/.col-xs-12.col-sm-9-->
 
         <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
-            <div class="portlet portlet-default">
+            {% if request.user %}
+            <div class="portlet portlet-default" style="width: 350px">
                 <div class="portlet-heading" style="vertical-align: middle">
                     <div class="portlet-title">
-                        <h4><i class="fa fa-circle text-green"></i> Jane Smith</h4>
+                        <h4><i class="fa fa-circle text-green"></i> Notification </h4>
                     </div>
                     <div class="portlet-widgets">
                         <span class="divider"></span>
@@ -128,77 +129,36 @@
                     <div class="clearfix"></div>
                 </div>
                 <div id="chat" class="panel-collapse collapse in">
-                    <div>
-                    <div class="portlet-body chat-widget" style="overflow-y: auto; width: auto; height: 300px;">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <p class="text-center text-muted small">January 1, 2014 at 12:23 PM</p>
-                            </div>
-                        </div>
+
+                    <div id="chat-box" class="portlet-body chat-widget" style="overflow-y: auto; width: auto; height: 500px;">
+                        {% for notification in notifications %}
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="media">
-                                    <a class="pull-left" href="#">
-                                        <img class="media-object img-circle" src="http://lorempixel.com/30/30/people/1/" alt="">
-                                    </a>
                                     <div class="media-body">
-                                        <h4 class="media-heading">Jane Smith
-                                            <span class="small pull-right">12:23 PM</span>
-                                        </h4>
-                                        <p>Hi, I wanted to make sure you got the latest product report. Did Roddy get it to you?</p>
+                                        <h4 class="media-heading">{{ notification.0 }}</h4>
+                                        <p>{{ notification.1 }}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <hr>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="media">
-                                    <a class="pull-left" href="#">
-                                        <img class="media-object img-circle" src="http://lorempixel.com/30/30/people/7/" alt="">
-                                    </a>
-                                    <div class="media-body">
-                                        <h4 class="media-heading">John Smith
-                                            <span class="small pull-right">12:28 PM</span>
-                                        </h4>
-                                        <p>Yeah I did. Everything looks good.</p>
-                                        <p>Did you have an update on purchase order #302?</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="media">
-                                    <a class="pull-left" href="#">
-                                        <img class="media-object img-circle" src="http://lorempixel.com/30/30/people/7/" alt="">
-                                    </a>
-                                    <div class="media-body">
-                                        <h4 class="media-heading">Jane Smith
-                                            <span class="small pull-right">12:39 PM</span>
-                                        </h4>
-                                        <p>No not yet, the transaction hasn't cleared yet. I will let you know as soon as everything goes through. Any idea where you want to get lunch today?</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                    </div>
+                        {% endfor %}
                     </div>
                     <div class="portlet-footer">
                         <form role="form">
                             <div class="form-group">
-                                <textarea class="form-control" placeholder="Enter message..."></textarea>
+                                <textarea id="chat-text" class="form-control" placeholder="Enter message..."></textarea>
                             </div>
                             <div class="form-group">
-                                <button type="button" class="btn btn-default pull-right">Send</button>
+                                <button type="button" class="btn btn-default pull-right send-button">Send</button>
                                 <div class="clearfix"></div>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
+            {% endif %}
         </div><!--/.sidebar-offcanvas-->
       </div><!--/row-->
 
@@ -216,11 +176,98 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <script src="/media/js/bootstrap.js"></script>
     <script type="text/javascript" src="/media/js/Example.Modal.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function () {
+            function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        $(function () {
+            var csrftoken = getCookie('csrftoken');
+            $.ajaxSetup({
+                headers: { "X-CSRFToken": csrftoken }
+            });
+        });
+            {% if request.user %}
+            var socket = io('http://143.248.49.203:3000');
+            socket.on('chat message', function (msg) {
+                console.log(msg);
+                var chat_content = $('<div class="row"><div class="col-lg-12"><div class="media"><div class="media-body"><h4 class="media-heading">{{ request.user.username }}</h4><p>'+msg.msg+'</p></div></div></div></div><hr>');
+                $('#chat-box').append(chat_content);
+                $('#chat-box')[0].scrollTop = $('#chat-box')[0].scrollHeight;
+            });
+            socket.emit('join notification room', {username: '{{ request.user.username }}'});
+            $('.send-button').click(function () {
+                if ($(this).hasAttribute('id')) {
+                    var id = $(this).attr('id');
+                    var msg = $('#chat-text').val();
+                    socket.emit('chat message', {id: id, msg: msg});
+                    $.ajax({
+                        type: 'POST',
+                        url: '/ajax/chat/',
+                        data: {
+                            'id': id,
+                            'msg': msg
+                        },
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        success: function (response) {
+
+                        }
+                    });
+                }
+            });
+            $('.chat-button').click(function () {
+                // id인 유저네임을 가지고 아작스 쿼리 날려서 룸 넘버를 (생성해서) 가지고 온다.
+                console.log($(this).attr('id'));
+                $.ajax({
+                    type: 'POST',
+                    url: '/ajax/roomid/',
+                    data: {
+                        'username': $(this).attr('id')
+                    },
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    success: function (response) {
+                        socket.emit('chat message', {id: $(this).attr('id'), msg: '{{ request.user.username }} wants to talk to you.'});
+                        socket.emit('join chat room', {id: response['id']});
+                        $('#send-button').attr('id', response['id']);
+                        // clear chat box and fetch stored chat.
+                        $('#chat-box').empty();
+                        var chat_message;
+                        for (chat_message in response['messages']) {
+                            var chat_content = $('<div class="row"><div class="col-lg-12"><div class="media"><div class="media-body"><h4 class="media-heading">'+chat_message[0]+'</h4><p>'+chat_message[1]+'</p></div></div></div></div><hr>');
+                            $('#chat-box').append(chat_content)
+                        }
+                        $.ajax({
+                            type: 'POST',
+                            url: '/ajax/notify/',
+                            data: {
+                                'id': $(this).attr('id'),
+                                'msg': '{{ request.user.username }} wants to talk to you.'
+                            },
+                            'csrfmiddlewaretoken': '{{ csrf_token }}',
+                            success: function (response) {
+
+                            }
+                        });
+                    }
+                });
+            });
+            {% endif %}
             $('#inputPassword').keypress(function(e){
                 if(e.keyCode==13)
                 $('#login-button').click();

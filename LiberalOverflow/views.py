@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.shortcuts import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from LiberalOverflow.models import UserProfile, Lecture, TimeSlot
+from LiberalOverflow.models import UserProfile, Lecture, TimeSlot, Chat, ChatMessage
 from django.contrib.auth.decorators import login_required
 
 # Import the email modules we'll need
@@ -133,20 +133,23 @@ def find_give_lectures(my_profile, your_profile):
 # Create your views here.
 def home(request):
     # matching algorithm
-    my_profile = UserProfile.objects.filter(user=request.user)[0]
-    user_profile_all = list(UserProfile.objects.exclude(user=request.user))
-    exchangables = []
-    for user_profile in user_profile_all:
-        take_lectures = find_take_lectures(my_profile, user_profile)
-        give_lectures = find_give_lectures(my_profile, user_profile)
-        if take_lectures or give_lectures:
-            exchangables.append([user_profile.user.username, take_lectures, give_lectures])
-    context = {
-        'exchangables': exchangables
-    }
-    print(x[0] for x in exchangables)
-    print([x.lecture_name for x in exchangables[0][1]])
-    print([x.lecture_name for x in exchangables[0][2]])
+    context = {}
+    if request.user.is_authenticated:
+        my_profile = UserProfile.objects.filter(user=request.user)[0]
+        user_profile_all = list(UserProfile.objects.exclude(user=request.user))
+        exchangables = []
+        notifications = []
+        for notification in my_profile.notifications.all():
+            notifications.append([notification.chatter, notification.message])
+        for user_profile in user_profile_all:
+            take_lectures = find_take_lectures(my_profile, user_profile)
+            give_lectures = find_give_lectures(my_profile, user_profile)
+            if take_lectures or give_lectures:
+                exchangables.append([user_profile.user.username, take_lectures, give_lectures])
+        context = {
+            'exchangables': exchangables,
+            'notifications': notifications
+        }
     return render(request, 'home.html', context)
 
 
@@ -320,3 +323,50 @@ def delete_wish_ajax(request):
     ##########################################
     response_data['success'] = True
     return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
+def get_roomid_ajax(request):
+    # request['username']와 자기자신이 들어있는 room을 찾아 그 아이디 반환
+    response_data = dict()
+    response_data['messages'] = []
+    print(request.POST['username'])
+    the_other = User.objects.filter(username=request.POST['username'])[0]
+    print(the_other)
+    chat_list = Chat.objects.all()
+    for chat in chat_list:
+        if request.user in chat.chatters.all():
+            if the_other in chat.chatters.all():
+                response_data['id'] = chat.roomid
+                for msg in chat.messages.all():
+                    response_data['messages'].append([msg.chatter.username, msg.message])
+                return HttpResponse(json.dumps(response_data), content_type="application/json")
+    new_chat = Chat()
+    new_chat.save()
+    new_chat.chatters.add(request.user)
+    new_chat.chatters.add(the_other)
+    new_chat.roomid = str(uuid.uuid4())
+    new_chat.save()
+    response_data['id'] = new_chat.roomid
+
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
+def add_message_ajax(request):
+    response_data = {}
+    chat_msg = ChatMessage()
+    chat_msg.chatter = request.user.username
+    chat_msg.message = request.POST['msg']
+    chat_msg.save()
+    chat = Chat.objects.filter(roomid=request.POST['id'])[0]
+    chat.messages.add(chat_msg)
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
+def notify_ajax(request):
+    response_data = {}
+    print(request.POST['message'])
+    print(request.POST['id'])
+    the_other = User.objects.filter(username=request.POST['id'])[0]
+    the_other.notifications.create(chatter=request.user.username)
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
+

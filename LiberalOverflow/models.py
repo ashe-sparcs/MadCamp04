@@ -15,6 +15,11 @@ class Lecture(models.Model):
     time_slots = models.ManyToManyField(TimeSlot)
 
 
+class ChatMessage(models.Model):
+    chatter = models.CharField(max_length=20)
+    message = models.CharField(max_length=100)
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     isAuthenticated = models.BooleanField(default=False)
@@ -22,5 +27,12 @@ class UserProfile(models.Model):
     authenticationCode = models.CharField(max_length=40)
     taken_lectures = models.ManyToManyField(Lecture)
     wish_time_slots = models.ManyToManyField(TimeSlot)
+    notifications = models.ManyToManyField(ChatMessage)
+
+
+class Chat(models.Model):
+    chatters = models.ManyToManyField(User)
+    messages = models.ManyToManyField(ChatMessage)
+    roomid = models.CharField(max_length=40)
 
 
